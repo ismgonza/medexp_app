@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Procedimientos firmados por {{ signed_by.username }}</h2>
+{% if start_date and end_date %}
+<p>Desde {{ start_date }} hasta {{ end_date }}</p>
+{% endif %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Paciente</th>
+            <th>Tipo de Procedimiento</th>
+            <th>Costo Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for procedure in procedures %}
+        <tr>
+            <td>{{ procedure.procedure_date }}</td>
+            <td>{{ procedure.patient }}</td>
+            <td>{{ procedure.procedure_type }}</td>
+            <td>{{ procedure.total_cost }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No hay procedimientos para mostrar.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'reports_dashboard' %}?tab=procedures_by_signed_by" class="btn btn-primary">Volver al Informe</a>
+{% endblock %}

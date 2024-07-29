@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Detalles de Usuario</h2>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <p><strong>Usuario:</strong> {{ user.username }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>Correo:</strong> {{ user.email }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <p><strong>Nombre:</strong> {{ user.first_name }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>Apellido:</strong> {{ user.last_name }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <p><strong>Grupos:</strong> {{ user.groups.all|join:", " }}</p>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-4">
+                <p><strong>Último Ingreso:</strong> {{ user.last_login|default:"Never" }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>Fecha de Creación:</strong> {{ user.date_joined }}</p>
+            </div>
+        </div>
+    <hr>
+    <div class="right-aligned">
+        <a href="{% url 'user_update' user.pk %}" class="btn btn-primary">Editar</a>
+        {% if perms.core.delete_user %}
+        <a href="{% url 'user_delete' user.id %}" class="btn btn-danger">Eliminar</a>
+        {% endif %}
+        <a href="{% url 'user_list' %}" class="btn btn-secondary">Volver a la Lista</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .field-changes_display {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .field-changes_display hr {
+        margin: 10px 0;
+    }
+</style>
+{% endblock %}

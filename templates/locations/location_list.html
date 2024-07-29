@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Sucursales</h2>
+    <hr>
+    {% if perms.locations.add_location or perms.locations.change_location %}
+        <a href="{% url 'location_create' %}" class="btn btn-success mb-3">Agregar Nueva Sucursal</a>
+    {% endif %}
+    <div class="table-responsive">
+        <table id="location_list" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Provincia</th>
+                    <th>Canton</th>
+                    <th>Distrito</th>
+                    <th>Teléfono</th>
+                    <th>Activo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for location in object_list %}
+                <tr>
+                    <td><a href="{% url 'location_detail' location.pk %}">{{ location.name }}</a></td>
+                    <td>{{ location.province }}</td>
+                    <td>{{ location.canton }}</td>
+                    <td>{{ location.district }}</td>
+                    <td>{{ location.phone }}</td>
+                    <td>{{ location.is_active|yesno:"Si,No" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No locations found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

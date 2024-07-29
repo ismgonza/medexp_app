@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% if perms.patients.add_patient %}
+        <h2>{% if form.instance.pk %}Editar Paciente{% else %}Registrar Nuevo Paciente{% endif %}</h2>
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <h3>Información Personal</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.id_number|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.birth_date|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.first_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.last_name1|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.last_name2|as_crispy_field }}
+                        </div>
+                        <div id="message" style="display: none;"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.gender|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.marital_status|as_crispy_field }}
+                        </div>
+                    </div>
+                    <hr>
+                    <h3>Información de Contacto</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.email|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.primary_phone|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.work_phone|as_crispy_field }}
+                        </div>
+                    </div>
+                    <hr>
+                    <h3>Domicilio / Dirección</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.province|as_crispy_field }}
+                            <input type="hidden" id="current_province" value="{{ form.instance.province }}">
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.canton|as_crispy_field }}
+                            <input type="hidden" id="current_canton" value="{{ form.instance.canton }}">
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.district|as_crispy_field }}
+                            <input type="hidden" id="current_district" value="{{ form.instance.district }}">
+                        </div>
+                    </div>
+                    {{ form.address_details|as_crispy_field }}
+                    <hr>
+                    <h3>Contacto de Emergencia</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.emergency_contact1|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.emergency_phone1|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.emergency_contact2|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.emergency_phone2|as_crispy_field }}
+                        </div>
+                    </div>
+                    <hr>
+                    <h3>Datos Adicionales</h3>
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{ form.referral_source|as_crispy_field }}
+                        </div>
+                    </div>
+                    {{ form.consultation_reason|as_crispy_field }}
+                    {{ form.receive_notifications|as_crispy_field }}
+                    <hr>
+                    <h3>Historia Médica</h3>
+                    <p>Este cuestionario es sumamente importante para su tratamiento. Por favor conteste <strong>todas</strong> las preguntas.<br>
+                    Estos datos son confidenciales e importantes para su protección.</p>
+                    
+                    {% for field in form %}
+                        {% if field.name in 'under_treatment,under_treatment_text,current_medication,current_medication_text,serious_illnesses,serious_illnesses_text,surgeries,surgeries_text,allergies,allergies_text,anesthesia_issues,bleeding_issues,pregnant_or_lactating,contraceptives' %}
+                            {{ field|as_crispy_field }}
+                        {% endif %}
+                    {% endfor %}
+                    <hr>
+                    <h3>Condiciones Médicas</h3>
+                    <p>¿Ha padecido o padece de alguna de las siguientes enfermedades?</p>
+                    <div class="row">
+                        {% for field in form %}
+                            {% if field.name in 'high_blood_pressure,rheumatic_fever,drug_addiction,diabetes,anemia,thyroid,asthma,arthritis,cancer,heart_problems,smoker,ulcers,gastritis,hepatitis,kidney_diseases,hormonal_problems,epilepsy,aids,psychiatric_treatment' %}
+                                <div class="col-md-4">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <hr>
+                    <h3>Confirmación</h3>
+                    {{ form.information_confirmed|as_crispy_field }}
+                    <div class="right-aligned">
+                        <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Actualizar{% else %}Registrar{% endif %}</button>
+                        <a href="{% url 'patient_list' %}" class="btn btn-secondary">Volver a la Lista</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/cr_geo_selecter.js' %}"></script>
+    <script src="{% static 'js/padron_search.js' %}"></script>
+{% endblock %}

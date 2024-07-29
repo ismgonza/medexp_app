@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Detalles de Paciente - {{ patient.first_name }} {{ patient.last_name1 }} {{ patient.last_name2 }}</h2>
+
+<ul class="nav nav-tabs" id="patientTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if active_tab == 'details' %}active{% endif %}" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">Detalles</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if active_tab == 'procedures' %}active{% endif %}" id="procedures-tab" data-bs-toggle="tab" data-bs-target="#procedures" type="button" role="tab" aria-controls="procedures" aria-selected="false">Tratamientos</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if active_tab == 'payments' %}active{% endif %}" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments" type="button" role="tab" aria-controls="payments" aria-selected="false">Pagos</button>
+    </li>
+</ul>
+<div class="tab-content" id="patientTabsContent">
+    <div class="tab-pane fade {% if active_tab == 'details' %}show active{% endif %}" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <div class="card">
+            <div class="card-body">
+                <div class="patient-info">
+                    <h2>Información Personal</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Número de Cédula:</strong> {{ patient.id_number }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Fecha de Nacimiento:</strong> {{ patient.birth_date }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Nombre:</strong> {{ patient.first_name }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Primer Apellido:</strong> {{ patient.last_name1 }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Segundo Apellido:</strong> {{ patient.last_name2 }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Género:</strong> {{ patient.get_gender_display }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Estado Civil:</strong> {{ patient.get_marital_status_display }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h2>Información de Contacto</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Correo:</strong> <a href="mailto:{{ patient.email }}">{{ patient.email }}</a></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Teléfono Principal:</strong> <a href="https://wa.me/{{ patient.primary_phone }}">{{ patient.primary_phone }}</a></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Teléfono Adicional:</strong> <a href="https://wa.me/{{ patient.work_phone }}">{{ patient.work_phone }}</a></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h2>Domicilio</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Provincia:</strong> {{ patient.province }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Cantón:</strong> {{ patient.canton }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Distrito:</strong> {{ patient.district }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><strong>Dirección:</strong> {{ patient.address_details }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h2>Contactos de Emergencia</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Contacto:</strong> {{ patient.emergency_contact1 }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Teléfono:</strong><a href="https://wa.me/{{ patient.emergency_phone1 }}"> {{ patient.emergency_phone1 }}</a></p>
+                        </div>
+                    </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                            <p><strong>Contacto:</strong> {{ patient.emergency_contact2 }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Teléfono:</strong><a href="https://wa.me/{{ patient.emergency_phone2 }}"> {{ patient.emergency_phone2 }}</a></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h2>Datos Adicionales</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Fecha de Ingreso:</strong> {{ patient.admission_date }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Cómo supo de nosotros:</strong> {{ patient.get_referral_source_display }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Motivo de la consulta:</strong> {{ patient.consultation_reason }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Recibir Notificaciones:</strong> {% if patient.receive_notifications %}Si{% else %}No{% endif %}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h2>Historia Médica</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>En tratamiento:</strong> {% if patient.under_treatment %}<span style="color:red;">Si</span><p>{{ patient.under_treatment_text }}</p>
+                                {% else %}No{% endif %}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><strong>Toma medicamento:</strong> {% if patient.current_medication %}<span style="color:red;">Si</span><p>{{ patient.under_treatment_text }}</p>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <p><strong>Enfermedades Serias:</strong> {% if patient.serious_illnesses %}<span style="color:red;">Si</span><p>{{ patient.serious_illnesses_text }}</p>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <p><strong>Cirugías:</strong> {% if patient.surgeries %}<span style="color:red;">Si<p>{{ patient.surgeries_text }}</p></span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <p><strong>Alérgico a medicamentos:</strong> {% if patient.allergies %}<span style="color:red;">Si</span><p>{{ patient.allergies_text }}</p>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <p><strong>Alérgico a anestesia local:</strong> {% if patient.anesthesia_issues %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <p><strong>Sufre hemorragias:</strong> {% if patient.bleeding_issues %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <p><strong>Embarazada o en Lactancia:</strong> {% if patient.pregnant_or_lactating %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <p><strong>Usa anticonceptivos:</strong> {% if patient.contraceptives %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h2>Condiciones Médicas</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Presión alta:</strong> {% if patient.high_blood_pressure %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Fiebre reumática:</strong> {% if patient.rheumatic_fever %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Adicción a alguna droga:</strong> {% if patient.drug_addiction %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Diabetes:</strong> {% if patient.diabetes %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Anemia:</strong> {% if patient.anemia %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Tiroides:</strong> {% if patient.thyroid %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Asma:</strong> {% if patient.asthma %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Artritis:</strong> {% if patient.arthritis %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Cáncer:</strong> {% if patient.cancer %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Problemas cadiácos:</strong> {% if patient.heart_problems %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Fumador:</strong> {% if patient.smoker %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Úlceras:</strong> {% if patient.ulcers %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Gastritis:</strong> {% if patient.gastritis %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Hepatitis:</strong> {% if patient.hepatitis %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Enfermedades en riñones:</strong> {% if patient.kidney_diseases %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Problemas hormonales:</strong> {% if patient.hormonal_problems %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Epilepsia:</strong> {% if patient.epilepsy %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>SIDA:</strong> {% if patient.aids %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Tratamiento psiquiátricos:</strong> {% if patient.psychiatric_treatment %}<span style="color:red;">Si</span>{% else %}No{% endif %}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="patient-actions right-aligned">
+                        {% if perms.patients.change_patient %}
+                        <td>
+                            <a href="{% url 'patient_update' patient.pk %}" class="btn btn-primary">Editar</a>
+                            {% if perms.patients.delete_patient %}
+                                <a href="{% url 'patient_delete' patient.pk %}" class="btn btn-danger">Eliminar</a>
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                        <a href="{% url 'patient_list' %}" class="btn btn-secondary">Volver a la Lista</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade {% if active_tab == 'procedures' %}show active{% endif %}" id="procedures" role="tabpanel" aria-labelledby="procedures-tab">
+        <div class="card">
+            <div class="card-body">
+                <h2>Tratamientos del Paciente</h2>
+                <hr>
+                {% if patient.id %} 
+                    <a href="{% url 'procedure_create' patient.id %}" class="btn btn-success mb-3">Registrar Tratamiento</a>
+                {% endif %}
+    
+                <ul class="nav nav-tabs" id="procedureTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab" aria-controls="pending" aria-selected="true" style="background-color:orange; color:white">Pendientes</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="processed-tab" data-bs-toggle="tab" data-bs-target="#processed" type="button" role="tab" aria-controls="processed" aria-selected="false" style="background-color:DodgerBlue; color:white">Procesados</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="procedureTabsContent">
+                    <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                        <div id="pendingProcedures">
+                            {% include "procedures/procedure_table.html" with procedures=pending_procedures procedure_type="pending" %}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="processed" role="tabpanel" aria-labelledby="processed-tab">
+                        <div id="processedProcedures">
+                            {% include "procedures/procedure_table.html" with procedures=processed_procedures procedure_type="processed" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade {% if active_tab == 'payments' %}show active{% endif %}" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+        {% include "payments/payment_list_content.html" with payments=payments filter=filter paginate_by=paginate_by payment_method_choices=payment_method_choices %}
+    </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Existing tab functionality
+        var triggerTabList = [].slice.call(document.querySelectorAll('#patientTabs button'))
+        triggerTabList.forEach(function (triggerEl) {
+            var tabTrigger = new bootstrap.Tab(triggerEl)
+    
+            triggerEl.addEventListener('click', function (event) {
+                event.preventDefault()
+                tabTrigger.show()
+                // Store the active tab ID in sessionStorage
+                sessionStorage.setItem('activePatientTab', this.getAttribute('data-bs-target'))
+            })
+        })
+    
+        // Check for stored active tab and activate it
+        var activeTabId = sessionStorage.getItem('activePatientTab')
+        if (activeTabId) {
+            var activeTab = document.querySelector(`#patientTabs button[data-bs-target="${activeTabId}"]`)
+            if (activeTab) {
+                var tab = new bootstrap.Tab(activeTab)
+                tab.show()
+            }
+        }
+    
+        // Handle #procedureTabs anchor
+        if (window.location.hash === '#procedureTabs') {
+            var proceduresTab = document.querySelector('#patientTabs button[data-bs-target="#procedures"]')
+            if (proceduresTab) {
+                var tab = new bootstrap.Tab(proceduresTab)
+                tab.show()
+            }
+        }
+    
+        // New pagination handling
+        function loadProcedures(url, targetId) {
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('pendingProcedures').innerHTML = data.pending_html;
+                document.getElementById('processedProcedures').innerHTML = data.processed_html;
+                attachEventListeners();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    
+        function attachEventListeners() {
+            attachPaginationListeners();
+            attachStatusChangeListeners();
+        }
+    
+        function attachPaginationListeners() {
+            document.querySelectorAll('.pagination .page-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.dataset.url;
+                    if (url) {  // Only proceed if the link has a data-url attribute
+                        loadProcedures(url);
+                    }
+                });
+            });
+        }
+    
+        function attachStatusChangeListeners() {
+            document.querySelectorAll('.change-status').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const procedureId = this.getAttribute('data-procedure-id');
+                    const newStatus = this.getAttribute('data-status');
+                    const url = '/procedures/' + procedureId + '/change-status/';
+    
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ status: newStatus })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Reload both tabs to ensure correct content
+                            loadProcedures('?pending_page=1&processed_page=1');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error changing procedure status:', error);
+                    });
+                });
+            });
+        }
+    
+        attachEventListeners();
+    
+        const paymentFilterForm = document.getElementById('payment-filter-form');
+        const paymentsTab = document.getElementById('payments');
+    
+        if (paymentFilterForm) {
+            paymentFilterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(paymentFilterForm);
+                const searchParams = new URLSearchParams(formData);
+                
+                // Append the active tab to the URL
+                searchParams.append('active_tab', 'payments');
+    
+                fetch(`${window.location.pathname}?${searchParams.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    paymentsTab.innerHTML = data.html;
+                    // Ensure the payments tab is active
+                    const paymentTabButton = document.getElementById('payments-tab');
+                    if (paymentTabButton) {
+                        var tab = new bootstrap.Tab(paymentTabButton);
+                        tab.show();
+                        // Store the active tab
+                        sessionStorage.setItem('activePatientTab', '#payments');
+                    }
+                    // Reattach event listeners for the new content
+                    attachPaymentPaginationListeners();
+                });
+            });
+        }
+    
+        function attachPaymentPaginationListeners() {
+            paymentsTab.querySelectorAll('.pagination .page-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    let url = new URL(this.href, window.location.origin);
+                    // Append the active tab to the URL
+                    url.searchParams.append('active_tab', 'payments');
+                    
+                    fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        paymentsTab.innerHTML = data.html;
+                        attachPaymentPaginationListeners();
+                    });
+                });
+            });
+        }
+    
+        // Initial attachment of payment pagination listeners
+        attachPaymentPaginationListeners();
+    });
+</script>
+{% endblock %}

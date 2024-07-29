@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{% if perms.locations.add_location or perms.locations.change_location %}
+
+<h2>{% if form.instance.pk %}Editar{% else %}Registrar Nueva{% endif %} Sucursal</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" id="locationForm">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.name|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.phone|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    {{ form.province|as_crispy_field }}
+                    <input type="hidden" id="current_province" value="{{ form.instance.province }}">
+                </div>
+                <div class="col-md-4">
+                    {{ form.canton|as_crispy_field }}
+                    <input type="hidden" id="current_canton" value="{{ form.instance.canton }}">
+                </div>
+                <div class="col-md-4">
+                    {{ form.district|as_crispy_field }}
+                    <input type="hidden" id="current_district" value="{{ form.instance.district }}">
+                </div>
+            </div>
+
+            {{ form.address|as_crispy_field }}
+            {{ form.is_active|as_crispy_field }}
+
+            <div class="right-aligned">
+                <button type="submit" class="btn btn-primary">
+                    {% if form.instance.pk %}Actualizar{% else %}Registrar{% endif %}
+                </button>
+                <a href="{% url 'location_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/cr_geo_selecter.js' %}"></script>
+{% endblock %}

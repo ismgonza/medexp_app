@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Pagos</h2>
+
+<ul class="nav nav-tabs" id="paymentTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="balances-tab" data-bs-toggle="tab" data-bs-target="#balances" type="button" role="tab" aria-controls="balances" aria-selected="false">Balances</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="paymentTabsContent">
+    <div class="tab-pane fade" id="balances" role="tabpanel" aria-labelledby="balances-tab">
+        {% include "patients/patient_balance_list_content.html" with patients=balances %}
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var triggerTabList = [].slice.call(document.querySelectorAll('#paymentTabs button'))
+        triggerTabList.forEach(function (triggerEl) {
+            var tabTrigger = new bootstrap.Tab(triggerEl)
+    
+            triggerEl.addEventListener('click', function (event) {
+                event.preventDefault()
+                tabTrigger.show()
+            })
+        })
+    
+        // Preserve active tab on page reload
+        var activeTab = sessionStorage.getItem('activePaymentTab');
+        if (activeTab) {
+            var tab = new bootstrap.Tab(document.querySelector('#paymentTabs button[data-bs-target="' + activeTab + '"]'))
+            tab.show()
+        }
+    
+        // Store the active tab in sessionStorage when changed
+        triggerTabList.forEach(function(triggerEl) {
+            triggerEl.addEventListener('shown.bs.tab', function (event) {
+                sessionStorage.setItem('activePaymentTab', event.target.getAttribute('data-bs-target'))
+            })
+        })
+    })
+    </script>
+    {% endblock %}

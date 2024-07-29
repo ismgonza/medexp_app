@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>History for Procedure: {{ object }}</h2>
+
+<h3>Procedure History</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>User</th>
+            <th>Changes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for hist in history %}
+        <tr>
+            <td>{{ hist.history_date }}</td>
+            <td>{{ hist.history_user }}</td>
+            <td>
+                {% if hist.prev_record %}
+                    {% for field, change in hist.diff_against.prev_record.changes.items %}
+                        <p>{{ field }}: {{ change.old }} → {{ change.new }}</p>
+                    {% endfor %}
+                {% else %}
+                    <p>Initial creation</p>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if payment_history %}
+<h3>Payment History</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>User</th>
+            <th>Changes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for hist in payment_history %}
+        <tr>
+            <td>{{ hist.history_date }}</td>
+            <td>{{ hist.history_user }}</td>
+            <td>
+                {% if hist.prev_record %}
+                    {% for field, change in hist.diff_against.prev_record.changes.items %}
+                        <p>{{ field }}: {{ change.old }} → {{ change.new }}</p>
+                    {% endfor %}
+                {% else %}
+                    <p>Initial creation</p>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

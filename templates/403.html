@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Acceso Denegado (403)</h1>
+<p>Usted no tiene permisos para ver esta página.</p>
+<p>Si considera que esto es un error, contacte al administrador del sitio.</p>
+<a href="{% url 'home' %}">Volver a la página de Inicio</a>
+{% endblock %}

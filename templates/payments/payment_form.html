@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% if perms.payments.add_payment %}
+
+<h2>Agregar Pago</h2>
+<hr>
+<h3>{{ procedure.procedure_type }} - {{ procedure.procedure_date }}</h3>
+<p><strong>Paciente:</strong> {{ procedure.patient.first_name }} {{ procedure.patient.last_name1 }} {{ procedure.patient.last_name2 }}</p>
+<p><strong>Monto pendiente:</strong> ₡{{ procedure.balance }}</p>
+<div id="credit-warning" class="alert alert-warning mt-3" style="display: none;">
+    Advertencia, el monto ingresado excede el disponible del balance a favor.
+</div>
+
+<form method="post" id="payment-form">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <div class="right-aligned">
+        <button type="submit" class="btn btn-primary">Ingresar Pago</button>
+        <a href="{% url 'procedure_detail' procedure.id %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+</br>
+<p class="text-info"><i>NOTA: Si el pago excede el monto pendiente, la diferencia se agregará como saldo a favor del paciente.</i></p>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('payment-form');
+        const amountField = form.querySelector('#id_amount');
+        const methodField = form.querySelector('#id_payment_method');
+        const warningDiv = document.getElementById('credit-warning');
+        const availableCredit = {{ amount_in_favor }};
+        const pendingAmount = {{ procedure.balance }};
+    
+        function checkCredit() {
+            const amount = parseFloat(amountField.value) || 0;
+            const method = methodField.value;
+    
+            if (method === 'CREDIT' && amount > availableCredit) {
+                warningDiv.style.display = 'block';
+                warningDiv.textContent = `Advertencia: El monto excede su crédito disponible (₡${availableCredit}).`;
+            } else if (amount > pendingAmount) {
+                warningDiv.style.display = 'block';
+                warningDiv.textContent = `Advertencia: El monto excede el saldo pendiente (₡${pendingAmount}).`;
+            } else {
+                warningDiv.style.display = 'none';
+            }
+        }
+    
+        amountField.addEventListener('input', checkCredit);
+        methodField.addEventListener('change', checkCredit);
+    });
+    </script>
+{% endblock %}

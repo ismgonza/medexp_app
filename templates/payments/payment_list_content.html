@@ -1,0 +1,116 @@
+<!-- Insert the search form and table from the current payment_list.html -->
+<fieldset class="card">
+    <form method="get" class="mb-3">
+        <div class="row">
+            <div class="col-md-6">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Desde</span>
+                </div>
+                {{ filter.form.payment_date.0 }}
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Hasta</span>
+                </div>
+                {{ filter.form.payment_date.1 }}
+              </div>
+            </div>
+            <div class="col-md-2">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+              <h5>Método de Pago</h5>
+              <div class="form-check form-check-inline">
+                  {% for choice in filter.form.payment_method %}
+                      <div class="form-check form-check-inline">
+                          {{ choice.tag }}
+                          <label class="form-check-label" for="{{ choice.id_for_label }}">
+                              {{ choice.choice_label }}
+                          </label>
+                      </div>
+                  {% endfor %}
+              </div>
+          </div>
+      </div>
+    </form>
+</fieldset>
+
+<div class="table table-responsive">
+    <table id="payment_list_content" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Código Tratamiento</th>
+                <th>Tratamiento</th>
+                <th>Piezas Dentales</th>
+                <th>Factura #</th>
+                <th>Monto Tratamiento</th>
+                <th>Monto del Pago</th>
+                <th>Método de Pago</th>
+                <th>Fecha del Pago</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td><a href="{% url 'procedure_detail' payment.procedure.id %}">{{ payment.procedure.id }}</a></td>
+                <td>{{ payment.procedure.procedure_type }}</td>
+                <td>{{ payment.procedure.dental_piece }}</td>
+                <td>{{ payment.invoice_number }}</td>
+                <td>{{ payment.procedure.total_cost }}</td>
+                <td>₡{{ payment.amount }}</td>
+                <td>{{ payment.get_payment_method_display }}</td>
+                <td>{{ payment.payment_date }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No hay pagos registrados</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if payments.paginator.num_pages > 1 %}
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    {% if payments.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ payments.previous_page_number }}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link" aria-hidden="true">&laquo;</span>
+      </li>
+    {% endif %}
+
+    {% for num in payments.paginator.page_range %}
+      {% if payments.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% elif num > payments.number|add:'-3' and num < payments.number|add:'3' %}
+        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if payments.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ payments.next_page_number }}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link" aria-hidden="true">&raquo;</span>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+<div class="pagination-info text-center my-3">
+  Mostrando {{ payments.start_index }} - {{ payments.end_index }} de {{ payments.paginator.count }} pagos
+</div>

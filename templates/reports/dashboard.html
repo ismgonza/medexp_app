@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Panel de Informes</h2>
+<hr>
+<fieldset class="card">
+    <form id="dateRangeForm" method="get" action="">
+        <input type="hidden" id="tab" name="tab" value="{{ active_tab }}">
+        <div class="row align-items-end">
+            <div class="col-md-5">
+                <label for="start_date">Fecha de inicio:</label>
+                <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
+            </div>
+            <div class="col-md-5">
+                <label for="end_date">Fecha de fin:</label>
+                <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Aplicar</button>
+            </div>
+        </div>
+    </form>
+</fieldset>
+<ul class="nav nav-tabs mt-3" id="reportTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if active_tab == 'procedures_by_location' %}active{% endif %}" id="procedures_by_location-tab" data-bs-toggle="tab" data-bs-target="#procedures_by_location" type="button" role="tab" aria-controls="procedures_by_location" aria-selected="true">Procedimientos por Ubicación</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if active_tab == 'procedures_by_signed_by' %}active{% endif %}" id="procedures_by_signed_by-tab" data-bs-toggle="tab" data-bs-target="#procedures_by_signed_by" type="button" role="tab" aria-controls="procedures_by_signed_by" aria-selected="false">Procedimientos por Firmante</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if active_tab == 'procedures_by_inventory_item' %}active{% endif %}" id="procedures_by_inventory_item-tab" data-bs-toggle="tab" data-bs-target="#procedures_by_inventory_item" type="button" role="tab" aria-controls="procedures_by_inventory_item" aria-selected="false">Procedimientos por Artículo de Inventario</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if active_tab == 'procedures_by_status' %}active{% endif %}" id="procedures_by_status-tab" data-bs-toggle="tab" data-bs-target="#procedures_by_status" type="button" role="tab" aria-controls="procedures_by_status" aria-selected="false">Procedimientos por Estado</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if active_tab == 'payments_by_payment_method' %}active{% endif %}" id="payments_by_payment_method-tab" data-bs-toggle="tab" data-bs-target="#payments_by_payment_method" type="button" role="tab" aria-controls="payments_by_payment_method" aria-selected="false">Pagos por Método de Pago</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if active_tab == 'procedures_by_payment_status' %}active{% endif %}" id="procedures_by_payment_status-tab" data-bs-toggle="tab" data-bs-target="#procedures_by_payment_status" type="button" role="tab" aria-controls="procedures_by_payment_status" aria-selected="false">Procedimientos por Estado de Pago</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="reportTabsContent">
+    <div class="tab-pane fade {% if active_tab == 'procedures_by_location' %}show active{% endif %}" id="procedures_by_location" role="tabpanel" aria-labelledby="procedures_by_location-tab">
+        <div id="procedures_by_location_table" data-report-type="procedures_by_location"></div>
+    </div>
+    <div class="tab-pane fade {% if active_tab == 'procedures_by_signed_by' %}show active{% endif %}" id="procedures_by_signed_by" role="tabpanel" aria-labelledby="procedures_by_signed_by-tab">
+        <div id="procedures_by_signed_by_table" data-report-type="procedures_by_signed_by"></div>
+    </div>
+    <div class="tab-pane fade {% if active_tab == 'procedures_by_inventory_item' %}show active{% endif %}" id="procedures_by_inventory_item" role="tabpanel" aria-labelledby="procedures_by_inventory_item-tab">
+        <div id="procedures_by_inventory_item_table" data-report-type="procedures_by_inventory_item"></div>
+    </div>
+    <div class="tab-pane fade {% if active_tab == 'procedures_by_status' %}show active{% endif %}" id="procedures_by_status" role="tabpanel" aria-labelledby="procedures_by_status-tab">
+        <div id="procedures_by_status_table" data-report-type="procedures_by_status"></div>
+    </div>
+    <div class="tab-pane fade {% if active_tab == 'payments_by_payment_method' %}show active{% endif %}" id="payments_by_payment_method" role="tabpanel" aria-labelledby="payments_by_payment_method-tab">
+        <div id="payments_by_payment_method_table" data-report-type="payments_by_payment_method"></div>
+    </div>
+    <div class="tab-pane fade {% if active_tab == 'procedures_by_payment_status' %}show active{% endif %}" id="procedures_by_payment_status" role="tabpanel" aria-labelledby="procedures_by_payment_status-tab">
+        <div id="procedures_by_payment_status_table" data-report-type="procedures_by_payment_status"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/reports_dashboard.js' %}"></script>
+{% endblock %}

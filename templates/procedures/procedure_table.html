@@ -1,0 +1,99 @@
+<div class="table table-responsive">
+    <table id="procedure_list" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Fecha</th>
+                <th>Tipo de Tratamiento</th>
+                <th>Piezas Dentales</th>
+                <th>Costo Total</th>
+                <th>Estado de Pago</th>
+                <th>Estado</th>
+                <th>Firmado Por</th>
+                <th>Sucursal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for procedure in procedures %}
+            <tr>
+                <td><a href="{% url 'procedure_detail' procedure.id %}">{{ procedure.id }}</a></td>
+                <td>{{ procedure.procedure_date }}</td>
+                <td>{{ procedure.procedure_type }}</td>
+                <td>{{ procedure.dental_piece }}</td>
+                <td>₡{{ procedure.total_cost }}</td>
+                <td>{{ procedure.get_payment_status_display }}</td>
+                <td>
+                    <span class="procedure-status {% if procedure.status == 'COMPLETED' %}status-completed{% elif procedure.status == 'PENDING' %}status-pending{% elif procedure.status == 'CANCELED' %}status-canceled{% endif %}" data-procedure-id="{{ procedure.id }}">
+                        {{ procedure.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ procedure.signed_by.get_full_name|default:procedure.signed_by.username }}</td>
+                <td>{{ procedure.location.name }}</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ procedure.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="vertical-ellipsis">⋮</span>
+                        </button>
+                        <ul class="dropdown-menu status-dropdown" aria-labelledby="dropdownMenuButton{{ procedure.id }}">
+                            <li><a class="dropdown-item change-status" href="#" data-procedure-id="{{ procedure.id }}" data-status="PENDING">Pendiente</a></li>
+                            <li><a class="dropdown-item change-status" href="#" data-procedure-id="{{ procedure.id }}" data-status="COMPLETED">Completado</a></li>
+                            <li><a class="dropdown-item change-status" href="#" data-procedure-id="{{ procedure.id }}" data-status="CANCELED">Cancelado</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No hay tratamientos registrados en esta categoría.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if procedures.paginator.num_pages > 1 %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if procedures.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="#" data-url="?{{ procedure_type }}_page={{ procedures.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% for num in procedures.paginator.page_range %}
+            {% if procedures.number == num %}
+                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+            {% elif num > procedures.number|add:'-3' and num < procedures.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="#" data-url="?{{ procedure_type }}_page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if procedures.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="#" data-url="?{{ procedure_type }}_page={{ procedures.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="pagination-info text-center my-3">
+    Mostrando {{ procedures.start_index }} - {{ procedures.end_index }} de {{ procedures.paginator.count }} tratamientos
+</div>
+{% endif %}
