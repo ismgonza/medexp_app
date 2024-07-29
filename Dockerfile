@@ -23,8 +23,8 @@ RUN pip install -v -r requirements.txt
 # Copy project
 COPY . .
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Create directory for static files
+RUN mkdir -p /app/staticfiles && chmod 755 /app/staticfiles
 
 # Run the start script
 COPY start.sh /app/start.sh
