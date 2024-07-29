@@ -14,10 +14,13 @@ COPY . .
 # Create directory for static files
 RUN mkdir -p /app/staticfiles
 
-# Install requirements again to ensure all packages are installed
-RUN pip install --no-cache-dir -r requirements.txt
+# Create a startup script
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY"' >> /app/start.sh && \
+    echo 'echo "All environment variables:"' >> /app/start.sh && \
+    echo 'env' >> /app/start.sh && \
+    echo 'python manage.py collectstatic --noinput' >> /app/start.sh && \
+    echo 'gunicorn config.wsgi:application --bind 0.0.0.0:8888' >> /app/start.sh && \
+    chmod +x /app/start.sh
 
-RUN echo "DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY"
-
-# We'll collect static files at runtime instead of build time
-CMD ["sh", "-c", "python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["/app/start.sh"]

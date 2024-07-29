@@ -8,11 +8,21 @@ services:
     volumes:
       - static_volume:/app/staticfiles
     ports:
-      - "8888:8000"
+      - "8888:8888"
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      # Portainer will inject the other environment variables here
+      - DEBUG=${DEBUG}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
 
 volumes:
   static_volume:
