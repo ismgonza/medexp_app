@@ -36,7 +36,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", default="")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['vcdontics.com', 'expediente.vcdontics.com', 'localhost', '0.0.0.0:8000']
+ALLOWED_HOSTS = ['vcdontics.com', 'expediente.vcdontics.com', 'localhost', '0.0.0.0:8888']
 
 # Add this for improved security
 # SECURE_SSL_REDIRECT = True
