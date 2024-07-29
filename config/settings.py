@@ -31,7 +31,7 @@ LOGOUT_REDIRECT_URL = 'login'
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", default="")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
@@ -172,10 +172,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 # This setting is used for deployment
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+# Whitenoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # for production server run
 # python manage.py collectstatic
@@ -197,13 +201,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Auditlog
 # https://django-auditlog.readthedocs.io/en/latest/usage.html#
 AUDITLOG_INCLUDE_ALL_MODELS=True
-
-# Whitenoise configuration
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
-from django.core.exceptions import ImproperlyConfigured
-
-# ...
-
-# SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
