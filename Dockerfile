@@ -14,5 +14,8 @@ COPY . .
 # Create directory for static files
 RUN mkdir -p /app/staticfiles
 
+# Install requirements again to ensure all packages are installed
+RUN pip install --no-cache-dir -r requirements.txt
+
 # We'll collect static files at runtime instead of build time
 CMD ["sh", "-c", "python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]

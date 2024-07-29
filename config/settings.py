@@ -36,7 +36,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", default="")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['vcdontics.com', 'expediente.vcdontics.com', 'localhost', '127.0.0.1', 'vcdontics.com:8888']
+ALLOWED_HOSTS = ['vcdontics.com', 'expediente.vcdontics.com', 'localhost', '0.0.0.0:8888']
 
 # Add this for improved security
 # SECURE_SSL_REDIRECT = True
@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'django_filters',
-    'simple_history',
+    # 'simple_history',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
