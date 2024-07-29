@@ -3,7 +3,7 @@
 __pycache__/
 *.pyo
 *.pyd
-requirements.txt
+# requirements.txt
 
 # Virtual Environment
 venv/
