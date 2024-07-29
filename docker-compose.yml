@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    command: /app/start.sh
+    command: gunicorn medexp_app.wsgi:application --bind 0.0.0.0:8888
     volumes:
       - .:/app
     ports:
