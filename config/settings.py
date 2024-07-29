@@ -125,6 +125,10 @@ DATABASES = {
         'PASSWORD': os.getenv("DB_PASSWORD", default=""),
         'HOST': os.getenv("DB_HOST", default=""),
         'PORT': os.getenv("DB_PORT", default=""),
+        'CONN_MAX_AGE': 600,  # connection persistence for 10 minutes
+        'OPTIONS': {
+            'connect_timeout': 5,
+        }
     }
 }
 
@@ -202,6 +206,4 @@ from django.core.exceptions import ImproperlyConfigured
 
 # ...
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-if not SECRET_KEY:
-    raise ImproperlyConfigured("DJANGO_SECRET_KEY environment variable is not set")
+# SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
