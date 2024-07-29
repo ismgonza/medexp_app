@@ -39,9 +39,9 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = ['vcdontics.com', 'expediente.vcdontics.com', 'localhost', '127.0.0.1']
 
 # Add this for improved security
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
 
 # Add this for improved security
 # SECURE_HSTS_SECONDS = 31536000  # 1 year
