@@ -18,8 +18,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Default url behaviors
 LOGIN_URL = 'login'
@@ -31,13 +31,12 @@ LOGOUT_REDIRECT_URL = 'login'
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", default="")
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", default="")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['vcdontics.com', 'expediente.vcdontics.com', 'localhost']
+ALLOWED_HOSTS = ['vcdontics.com', 'expediente.vcdontics.com', 'localhost', '127.0.0.1']
 
 # Add this for improved security
 SECURE_SSL_REDIRECT = True
@@ -116,25 +115,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': os.getenv("DB_NAME", default=""),
-#         'USER': os.getenv("DB_USER", default=""),
-#         'PASSWORD': os.getenv("DB_PASSWORD", default=""),
-#         'HOST': os.getenv("DB_HOST", default=""),
-#         'PORT': os.getenv("DB_PORT", default=""),
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST', 'db'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv("DB_NAME", default=""),
+        'USER': os.getenv("DB_USER", default=""),
+        'PASSWORD': os.getenv("DB_PASSWORD", default=""),
+        'HOST': os.getenv("DB_HOST", default=""),
+        'PORT': os.getenv("DB_PORT", default=""),
     }
 }
 
