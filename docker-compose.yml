@@ -10,6 +10,7 @@ services:
       - "8888:8888"
     environment:
       - PYTHONPATH=/app
+      - DJANGO_SETTINGS_MODULE=config.settings
     networks:
       - medexp_network
 
