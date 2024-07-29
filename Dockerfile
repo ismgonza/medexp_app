@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt /app/
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt || cat requirements.txt
+RUN cat requirements.txt | xargs -n 1 pip install
 
 COPY . /app/
 
