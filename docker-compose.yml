@@ -5,7 +5,7 @@ services:
     build: .
     command: gunicorn medexp_app.wsgi:application --bind 0.0.0.0:8888
     volumes:
-      - .:/app
+      - static_volume:/app/staticfiles
     ports:
       - "8888:8888"
     networks:
@@ -14,3 +14,6 @@ services:
 networks:
   medexp_network:
     driver: bridge
+
+volumes:
+  static_volume:
