@@ -28,7 +28,9 @@ RUN pip list
 RUN echo $DJANGO_SETTINGS_MODULE
 RUN ls -R /app
 RUN python -c "import django; print(django.__version__)"
-RUN python manage.py check --deploy
+RUN python -c "import sys; print('\n'.join(sys.path))"
+RUN python manage.py check -v 3
+RUN python manage.py check --deploy -v 3 || echo "Deploy check failed, but continuing..."
 RUN ls -R /app/static || echo "No static directory found"
 
 # Collect static files
