@@ -20,14 +20,9 @@ COPY . /app/
 
 # Diagnostic commands
 RUN python --version
-RUN python -c "import sys; print(sys.executable)"
-RUN python -c "import django; print(django.__file__)"
-RUN python -c "from django.conf import settings; print(settings.BASE_DIR)"
-RUN python -c "from django.conf import settings; print(settings.STATIC_ROOT)"
-RUN python -c "from django.conf import settings; print(settings.STATIC_URL)"
-RUN python -c "from django.conf import settings; print(settings.STATICFILES_DIRS)"
-RUN python -c "import os; print(os.listdir(settings.BASE_DIR))"
+RUN pip list
 RUN echo $DJANGO_SETTINGS_MODULE
+RUN ls -R /app
 
 # Collect static files
 RUN python manage.py collectstatic --noinput -v 3
