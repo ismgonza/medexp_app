@@ -5,8 +5,7 @@ services:
     build: .
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8888 --workers 4 --threads 2 --timeout 60
     volumes:
-      - .:/app
-      - static_volume:/app/staticfiles
+      - /volume1/docker/medexp:/app
     ports:
       - "8888:8888"
     networks:
@@ -15,6 +14,3 @@ services:
 networks:
   medexp_network:
     driver: bridge
-
-volumes:
-  static_volume:

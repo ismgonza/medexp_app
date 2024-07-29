@@ -14,15 +14,24 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.nav-link').forEach(tab => {
         tab.addEventListener('click', function() {
             const reportType = this.id.replace('-tab', '');
-            loadReportData(reportType);
+            const reportContainer = document.getElementById(`${reportType}_table`);
+            if (reportContainer && reportContainer.dataset.reportType) {
+                loadReportData(reportType);
+            }
         });
     });
 
     // Load initial report data
-    const initialReportType = document.querySelector('.tab-pane.active [data-report-type]').dataset.reportType;
-    loadReportData(initialReportType);
+    const initialReportContainer = document.querySelector('.tab-pane.active [data-report-type]');
+    if (initialReportContainer) {
+        loadReportData(initialReportContainer.dataset.reportType);
+    }
 
     function loadReportData(reportType) {
+        if (!reportType) {
+            return;  // Exit the function if reportType is empty
+        }
+        
         const startDate = document.getElementById('start_date').value;
         const endDate = document.getElementById('end_date').value;
         const url = `?report_type=${reportType}&start_date=${startDate}&end_date=${endDate}`;
@@ -30,8 +39,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 const tableContainer = document.getElementById(`${reportType}_table`);
-                tableContainer.innerHTML = createTable(data, reportType);
-                addDetailClickListeners(reportType);
+                if (tableContainer) {  // Check if the container exists before updating
+                    tableContainer.innerHTML = createTable(data, reportType);
+                    addDetailClickListeners(reportType);
+                }
             })
             .catch(error => {
                 console.error('Error loading report data:', error);

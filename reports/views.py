@@ -12,12 +12,15 @@ class ReportsDashboardView(LoginRequiredMixin, PermissionRequiredMixin, Template
     template_name = 'reports/dashboard.html'
     permission_required = 'reports.view_reports'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['active_tab'] = self.request.GET.get('tab', 'procedures_by_location')
-        context['start_date'] = self.request.GET.get('start_date', '')
-        context['end_date'] = self.request.GET.get('end_date', '')
-        return context
+    def get(self, request, *args, **kwargs):
+        if 'report_type' in request.GET:
+            report_type = request.GET.get('report_type')
+            if report_type:
+                data = self.get_report_data(report_type)
+                return JsonResponse(list(data) if data is not None else [], safe=False)
+            else:
+                return JsonResponse([], safe=False)
+        return super().get(request, *args, **kwargs)
 
     def get_report_data(self, report_type):
         start_date = self.request.GET.get('start_date')
@@ -28,9 +31,7 @@ class ReportsDashboardView(LoginRequiredMixin, PermissionRequiredMixin, Template
             procedures = procedures.filter(procedure_date__range=[start_date, end_date])
 
         if report_type == 'procedures_by_location':
-            return procedures.values('location__name', 'location__id')\
-                .annotate(count=Count('id'), total_cost_sum=Sum('total_cost'))\
-                .order_by('-count')
+            return procedures.values('location__name', 'location__id').annotate(count=Count('id'), total_cost_sum=Sum('total_cost')).order_by('-count')
         elif report_type == 'procedures_by_signed_by':
             return procedures.values('signed_by__username', 'signed_by__id').annotate(count=Count('id')).order_by('-count')
         elif report_type == 'procedures_by_inventory_item':
@@ -44,13 +45,8 @@ class ReportsDashboardView(LoginRequiredMixin, PermissionRequiredMixin, Template
             if start_date and end_date:
                 payments = payments.filter(payment_date__range=[start_date, end_date])
             return payments.values('payment_method').annotate(count=Count('id')).order_by('-count')
-
-    def get(self, request, *args, **kwargs):
-        if 'report_type' in request.GET:
-            report_type = request.GET['report_type']
-            data = self.get_report_data(report_type)
-            return JsonResponse(list(data), safe=False)
-        return super().get(request, *args, **kwargs)
+        else:
+            return None  # Return None for unknown report types
 
     @method_decorator(require_POST)
     def get_detail_data(self, request):
