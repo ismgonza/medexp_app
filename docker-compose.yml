@@ -2,13 +2,15 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: gunicorn --config gunicorn.conf.py config.wsgi:application
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
     expose:
-      - 8888
+      - 8000
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DB_NAME=${DB_NAME}
@@ -21,7 +23,7 @@ services:
       - EMAIL_USE_TLS=${EMAIL_USE_TLS}
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
-  
+
   nginx:
     image: nginx:1.21-alpine
     volumes:
