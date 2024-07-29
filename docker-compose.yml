@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    command: gunicorn config.wsgi:application --bind 0.0.0.0:8888
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8888 --workers 4 --threads 2 --timeout 60
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
