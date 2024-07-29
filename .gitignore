@@ -27,3 +27,6 @@ migrations
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# Other Files
+cr_padron_*.json
