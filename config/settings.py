@@ -36,7 +36,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", default="")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['vcdontics.com', 'expediente.vcdontics.com', 'localhost', '0.0.0.0:8888']
+ALLOWED_HOSTS = ['vcdontics.com', 'expediente.vcdontics.com', 'localhost', '0.0.0.0:8000']
 
 # Add this for improved security
 # SECURE_SSL_REDIRECT = True
@@ -196,3 +196,12 @@ AUDITLOG_INCLUDE_ALL_MODELS=True
 
 # Whitenoise configuration
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+from django.core.exceptions import ImproperlyConfigured
+
+# ...
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    raise ImproperlyConfigured("DJANGO_SECRET_KEY environment variable is not set")

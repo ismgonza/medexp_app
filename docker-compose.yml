@@ -11,6 +11,7 @@ services:
       - "8888:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       # Portainer will inject the other environment variables here
 
 volumes:
