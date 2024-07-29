@@ -7,4 +7,3 @@ crispy-bootstrap5
 django-filter==23.2
 django-auditlog==2.3.0
 whitenoise==6.5.0
-django-simple-history
