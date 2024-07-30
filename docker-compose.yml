@@ -3,7 +3,9 @@ version: '3.8'
 services:
   web:
     restart: always
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: /app/docker-entrypoint.sh
     volumes:
       - /volume1/docker/medexp:/app
