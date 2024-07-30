@@ -21,13 +21,14 @@ COPY ./requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# copy project
-COPY . /app/
+# Copy entrypoint script
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 
-# Run gunicorn
-# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
-
+# Set correct permissions for entrypoint script
 RUN chmod +x /app/docker-entrypoint.sh
+
+# Copy project
+COPY . /app/
 
 # Set the entrypoint
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
