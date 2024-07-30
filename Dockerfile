@@ -42,8 +42,11 @@ RUN echo '#!/bin/sh' > /start.sh && \
     echo '  sleep 2' >> /start.sh && \
     echo 'done' >> /start.sh && \
     echo 'python manage.py migrate' >> /start.sh && \
-    echo 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8000' >> /start.sh && \
+    echo 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8090' >> /start.sh && \
     chmod +x /start.sh
+
+# Expose port 8090
+EXPOSE 8090
 
 # Set the command to run the startup script
 CMD ["/start.sh"]

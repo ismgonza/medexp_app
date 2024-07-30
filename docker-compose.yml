@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8001:8000"  # Map container port 8000 to host port 8001
+      - "8090"  # Map container port 8000 to host port 8001
     volumes:
       - /volume1/docker/medexp:/app
     environment:
