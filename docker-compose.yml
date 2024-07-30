@@ -6,7 +6,6 @@ services:
     build: .
     command: /app/docker-entrypoint.sh
     volumes:
-      - .:/app
       - /volume1/docker/medexp:/app
     environment:
       - SECRET_KEY=${SECRET_KEY}
