@@ -2,18 +2,35 @@ version: '3.8'
 
 services:
   web:
+    restart: always
     build: .
-    command: gunicorn config.wsgi:application --bind 0.0.0.0:8888
+    command: /app/docker-entrypoint.sh
     volumes:
       - /volume1/docker/medexp:/app
-    ports:
-      - "8888:8888"
     environment:
-      - PYTHONPATH=/app
-      - DJANGO_SETTINGS_MODULE=config.settings
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
     networks:
-      - medexp_network
+      - app-network
+
+  nginx:
+    restart: always
+    image: nginx:latest
+    ports:
+      - "8888:80"
+    volumes:
+      - /volume1/docker/medexp:/app
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    networks:
+      - app-network
 
 networks:
-  medexp_network:
+  app-network:
     driver: bridge
