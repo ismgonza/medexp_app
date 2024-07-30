@@ -1,0 +1,62 @@
+table{
+    border-collapse:collapse;
+    margin:20px 0;
+    padding:.5rem;
+    width:100%
+}
+.tooth{
+    position:relative;
+    width:60px;
+    height:60px;
+    margin:20px 5px;
+    display:flex;
+    justify-content:center;
+    align-items:center
+}
+.tooth-section{
+    position:absolute;
+    width:42%;
+    height:42%;
+    border:1px solid #000;
+    border-radius:25%
+}
+.tooth-center{
+    position:absolute;
+    width:45%;
+    height:45%;
+    border-radius:50%;
+    background-color:#fff;
+    border:1px solid #000
+}
+.tooth-number{
+    position:absolute;
+    bottom:-20px;
+    font-size:16px
+}
+.up{
+    top:0;
+    left:50%;
+    transform:translateX(-50%) rotate(45deg);
+    border-top-left-radius:100%
+}
+.down{
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%) rotate(45deg);
+    border-bottom-right-radius:100%
+}
+.left{
+    top:50%;
+    left:0;
+    transform:translateY(-50%) rotate(45deg);
+    border-bottom-left-radius:100%
+}
+.right{
+    top:50%;
+    right:0;
+    transform:translateY(-50%) rotate(45deg);
+    border-top-right-radius:100%
+}
+.separator-cell{
+    width:25px
+}
