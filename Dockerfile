@@ -36,16 +36,17 @@ COPY . /app/
 # Make sure gunicorn is installed
 RUN pip install gunicorn
 
-# Create a startup script
-RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'set -e' >> /app/start.sh && \
-    echo 'until nc -z $DB_HOST $DB_PORT; do' >> /app/start.sh && \
-    echo '  echo "Waiting for database to be ready..."' >> /app/start.sh && \
-    echo '  sleep 2' >> /app/start.sh && \
-    echo 'done' >> /app/start.sh && \
-    echo 'python manage.py migrate' >> /app/start.sh && \
-    echo 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8000' >> /app/start.sh && \
-    chmod +x /app/start.sh
+# Create a startup script in a location that won't be overwritten
+RUN echo '#!/bin/sh' > /start.sh && \
+    echo 'set -e' >> /start.sh && \
+    echo 'cd /app' >> /start.sh && \
+    echo 'until nc -z $DB_HOST $DB_PORT; do' >> /start.sh && \
+    echo '  echo "Waiting for database to be ready..."' >> /start.sh && \
+    echo '  sleep 2' >> /start.sh && \
+    echo 'done' >> /start.sh && \
+    echo 'python manage.py migrate' >> /start.sh && \
+    echo 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8000' >> /start.sh && \
+    chmod +x /start.sh
 
 # Set the command to run the startup script
-CMD ["/app/start.sh"]
+CMD ["/start.sh"]
