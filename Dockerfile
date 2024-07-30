@@ -9,18 +9,23 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 # Install core dependencies.
-RUN apt-get update && apt-get install -y libpq-dev build-essential && apt-get install -y netcat
+RUN apt-get update && apt-get install -y \
+    netcat-openbsd \
+    build-essential \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
 # install dependencies
-RUN pip install --upgrade pip
-COPY ./requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY ./requirements.txt /app/
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # copy project
-COPY . .
+COPY . /app/
 
 # Collect static files
-RUN python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput --verbosity 2
 
 # Run gunicorn
 # CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
