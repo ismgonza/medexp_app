@@ -21,11 +21,8 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# # Copy entrypoint script
-# COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-
-# # Set correct permissions for entrypoint script
-# RUN chmod +x /app/docker-entrypoint.sh
+# Copy Nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy project
 COPY . /app/
