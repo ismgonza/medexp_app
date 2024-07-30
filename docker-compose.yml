@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: /app/docker-entrypoint.sh
+    # command: /app/docker-entrypoint.sh
     volumes:
       - /volume1/docker/medexp:/app
     environment:
