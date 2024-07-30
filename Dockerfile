@@ -8,13 +8,13 @@ ENV PYTHONUNBUFFERED 1
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies
-# RUN apt-get update && apt-get install -y netcat
+# Install core dependencies.
+RUN apt-get update && apt-get install -y libpq-dev build-essential && apt-get install -y netcat
 
 # install dependencies
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # copy project
 COPY . .
