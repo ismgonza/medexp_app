@@ -24,9 +24,6 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # copy project
 COPY . /app/
 
-# Collect static files
-RUN python manage.py collectstatic --noinput --verbosity 2
-
 # Run gunicorn
 # CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
 
