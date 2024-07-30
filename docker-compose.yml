@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
     volumes:
       - /volume1/docker/medexp:/app
     environment:
