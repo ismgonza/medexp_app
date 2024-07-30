@@ -6,10 +6,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8090"  # Map container port 8000 to host port 8001
     volumes:
-      - /volume1/docker/medexp:/app
+      - ./static:/app/static
+      # - /volume1/docker/medexp:/app
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
@@ -28,8 +27,9 @@ services:
     ports:
       - "8888:80"
     volumes:
-      - /volume1/docker/medexp:/app
-      # - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/app/static
+      # - /volume1/docker/medexp:/app
     depends_on:
       - web
     networks:
