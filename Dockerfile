@@ -27,6 +27,9 @@ COPY . /app/
 # # Set the entrypoint
 # ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
+COPY nginx.conf /etc/nginx/nginx.conf
+
+
 # Make sure gunicorn is installed
 RUN pip install gunicorn
 
