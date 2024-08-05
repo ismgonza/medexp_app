@@ -193,12 +193,6 @@ th.asc::after {
 th.desc::after {
     content: ' ▼';
 }
-/* Charts */
-#proceduresChart {
-    max-width: 300px;
-    max-height: 300px;
-    margin: auto;
-  }
   /* Reports */
 .patient-link, .procedure-link, .inventory-link {
     color: #007bff;
@@ -223,4 +217,20 @@ th.desc::after {
 .status-completed {
     color: #28a745;
     font-weight: bold;
+}
+.nav-pills .nav-link {
+    border-radius: 0;
+    text-align: left;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+    border-left: 3px solid #0d6efd;
+}
+
+.tab-content {
+    border: 1px solid #dee2e6;
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    padding: 15px;
 }

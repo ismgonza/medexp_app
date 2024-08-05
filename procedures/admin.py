@@ -1,15 +1,14 @@
 from django.contrib import admin
-from simple_history.admin import SimpleHistoryAdmin
 from django.template.response import TemplateResponse
 from .models import Procedure
 from django.utils.safestring import mark_safe
 
 @admin.register(Procedure)
-class ProcedureAdmin(SimpleHistoryAdmin):
+class ProcedureAdmin(admin.ModelAdmin):
     list_display = ('patient', 'procedure_date', 'procedure_type', 'total_cost', 'payment_status', 'signed_by')
     history_list_display = ['created_by', 'updated_by']
     search_fields = ('patient__first_name', 'patient__last_name1', 'patient__last_name2', 'procedure_type')
-    readonly_fields = ('procedure_date',)
+    readonly_fields = ('procedure_date', 'signed_by')
     list_filter = ('procedure_date', 'payment_status', 'signed_by')
     date_hierarchy = 'procedure_date'
 

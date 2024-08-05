@@ -28,7 +28,7 @@ class Procedure(models.Model):
     initial_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default='UNPAID')
-    signed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=False, blank=False, related_name='signed_procedures', editable=False)
+    signed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=False, blank=False, related_name='signed_procedures')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
 
     def save(self, *args, **kwargs):

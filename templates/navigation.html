@@ -3,7 +3,7 @@
 <nav class="navbar navbar-expand-md">
     <div class="container">
         <div class="navbar-brand">
-            <img class="img-fluid" src="{% static 'images/logo_resized.png' %}" />
+            <img class="img-fluid" src="{% static 'img/logo_resized.png' %}" />
         </div>
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navcol-1">
             <span class="visually-hidden">Toggle navigation</span>
@@ -33,12 +33,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'location_list' %}">Sucursales</a>
                     </li>
-                {% endif %}
-
-                {% if perms.payments.view_payment %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'payment_list' %}">Pagos</a>
-                </li>
                 {% endif %}
 
                 {% if perms.inventory.view_inventoryitem %}

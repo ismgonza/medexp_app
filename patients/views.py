@@ -15,8 +15,6 @@ from django.core.cache import cache
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
-from django.db.models import Sum, Q, F, Case, When, DecimalField, Value, Count
-from django.db.models.functions import Coalesce
 
 class PatientListView(PermissionRequiredMixin, LoginRequiredMixin, FilterView):
     permission_required = 'patients.view_patient'
@@ -35,35 +33,6 @@ class PatientListView(PermissionRequiredMixin, LoginRequiredMixin, FilterView):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         context['paginate_by'] = self.get_paginate_by(self.get_queryset())
-        return context
-
-class PatientBalanceListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
-    permission_required = 'patients.view_patient'
-    model = Patient
-    template_name = 'patients/patient_balance_list_content.html'
-    context_object_name = 'patients'
-    paginate_by = 10
-
-    def get_queryset(self):
-        return Patient.objects.annotate(
-            procedure_count=Count('procedures', filter=Q(procedures__payment_status__in=['PARTIAL', 'UNPAID'])),
-            total_procedures=Coalesce(Sum(Case(
-                When(procedures__payment_status__in=['PARTIAL', 'UNPAID'], then=F('procedures__total_cost')),
-                default=Value(0),
-                output_field=DecimalField()
-            )), Value(0, output_field=DecimalField())),
-            total_payments=Coalesce(Sum(Case(
-                When(procedures__payment_status__in=['PARTIAL', 'UNPAID'], then=F('procedures__payments__amount')),
-                default=Value(0),
-                output_field=DecimalField()
-            )), Value(0, output_field=DecimalField())),
-            calculated_balance=F('total_procedures') - F('total_payments'),
-            amount_in_favor=Coalesce('balance__amount_in_favor', Value(0, output_field=DecimalField()))
-        ).order_by('last_name1', 'last_name2', 'first_name')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
         return context
 
 class PatientDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):

@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadReportData(reportType) {
         if (!reportType) {
-            return;  // Exit the function if reportType is empty
+            return;
         }
         
         const startDate = document.getElementById('start_date').value;
@@ -39,19 +39,19 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 const tableContainer = document.getElementById(`${reportType}_table`);
-                if (tableContainer) {  // Check if the container exists before updating
+                if (tableContainer) {
                     tableContainer.innerHTML = createTable(data, reportType);
                     addDetailClickListeners(reportType);
                 }
             })
             .catch(error => {
-                console.error('Error loading report data:', error);
+                console.error('Error cargando los datos:', error);
             });
     }
 
     function createTable(data, reportType) {
         if (!data || data.length === 0) {
-            return '<p>No data available for this report.</p>';
+            return '<p>No existen datos disponibles para este reporte</p>';
         }
     
         let html = '<table class="table"><thead><tr>';
@@ -64,12 +64,14 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '<tr>';
             headers.forEach(header => {
                 const key = getKey(header, reportType);
-                if (header === 'Número de Procedimientos') {
+                if (['Número de Procedimientos', 'Número de Pagos'].includes(header) && reportType !== 'patient_balances') {
                     html += `<td><a href="#" class="detail-link" data-id="${item[getIdKey(reportType)]}" data-type="${reportType}">${item[key]}</a></td>`;
-                } else if (header === 'Costo Total') {
+                } else if (reportType === 'patient_balances' && header === 'Paciente') {
+                    html += `<td><a href="/patients/${item.id}/">${item[key]}</a></td>`;
+                } else if (header === 'Costo Total' || (reportType === 'patient_balances' && ['Total de Tratamientos Pendientes', 'Total de Pagos Pendientes', 'Total Pendiente', 'Saldo a Favor'].includes(header))) {
                     html += `<td>₡${parseFloat(item[key]).toFixed(2)}</td>`;
                 } else {
-                    html += `<td>${item[key] || 'N/A'}</td>`;
+                    html += `<td>${formatValue(item[key], header, reportType) || 'N/A'}</td>`;
                 }
             });
             html += '</tr>';
@@ -85,12 +87,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 const itemId = this.dataset.id;
                 const itemType = this.dataset.type;
-                loadDetailData(itemType, itemId);
+                if (itemType !== 'patient_balances') {
+                    loadDetailData(itemType, itemId);
+                } else {
+                    // Handle patient balance click differently, maybe navigate to patient detail page
+                    window.location.href = `/patients/${itemId}/`;
+                }
             });
         });
     }
 
-    function loadDetailData(reportType, itemId) {
+    function loadDetailData(reportType, itemId, page = 1) {
         const startDate = document.getElementById('start_date').value;
         const endDate = document.getElementById('end_date').value;
         const url = '/reports/detail/';
@@ -99,7 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
         data.append('item_id', itemId);
         data.append('start_date', startDate);
         data.append('end_date', endDate);
-
+        data.append('page', page);
+    
         fetch(url, {
             method: 'POST',
             body: data,
@@ -110,17 +118,61 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             const detailContainer = document.getElementById(`${reportType}_detail`);
-            detailContainer.innerHTML = createDetailTable(data, reportType);
+            detailContainer.innerHTML = createDetailTable(data.results, reportType);
+            detailContainer.innerHTML += createPagination(data.pagination, reportType, itemId);
             detailContainer.style.display = 'block';
+            addPaginationListeners(reportType, itemId);
         })
         .catch(error => {
-            console.error('Error loading detail data:', error);
+            console.error('Error cargando los datos:', error);
+        });
+    }
+    
+    function createPagination(pagination, reportType, itemId) {
+        if (!pagination) {
+            return '';
+        }
+    
+        let html = '<nav aria-label="Page navigation"><ul class="pagination justify-content-center">';
+    
+        if (pagination.has_previous) {
+            html += `<li class="page-item"><a class="page-link" href="#" data-page="${pagination.previous_page}" data-report-type="${reportType}" data-item-id="${itemId}">Previous</a></li>`;
+        } else {
+            html += '<li class="page-item disabled"><span class="page-link">Previous</span></li>';
+        }
+    
+        for (let i = 1; i <= pagination.total_pages; i++) {
+            if (i === pagination.current_page) {
+                html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+            } else {
+                html += `<li class="page-item"><a class="page-link" href="#" data-page="${i}" data-report-type="${reportType}" data-item-id="${itemId}">${i}</a></li>`;
+            }
+        }
+    
+        if (pagination.has_next) {
+            html += `<li class="page-item"><a class="page-link" href="#" data-page="${pagination.next_page}" data-report-type="${reportType}" data-item-id="${itemId}">Next</a></li>`;
+        } else {
+            html += '<li class="page-item disabled"><span class="page-link">Next</span></li>';
+        }
+    
+        html += '</ul></nav>';
+        return html;
+    }
+    
+    function addPaginationListeners(reportType, itemId) {
+        const paginationLinks = document.querySelectorAll('.pagination .page-link');
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.dataset.page;
+                loadDetailData(reportType, itemId, page);
+            });
         });
     }
 
     function createDetailTable(data, reportType) {
         if (!data || data.length === 0) {
-            return '<p>No detailed data available for this item.</p>';
+            return '<p>No hay datos disponibles para esta entrada.</p>';
         }
     
         let html = `<h4>${getDetailTitle(reportType, data[0])}</h4>`;
@@ -168,35 +220,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 return ['Método de Pago', 'Número de Pagos'];
             case 'procedures_by_payment_status':
                 return ['Estado de Pago', 'Número de Procedimientos'];
+            case 'patient_balances':
+                return ['Paciente', 'Total de Tratamientos Pendientes', 'Total de Pagos Pendientes', 'Total Pendiente', 'Saldo a Favor'];
             default:
                 return [];
         }
     }
 
+    function formatValue(value, header, reportType) {
+        if (reportType === 'patient_balances' && ['Total de Tratamientos Pendientes', 'Total de Pagos Pendientes', 'Total Pendiente', 'Saldo a Favor'].includes(header)) {
+            return `₡${parseFloat(value).toFixed(2)}`;
+        }
+        return value;
+    }
+
     function getKey(header, reportType) {
-        switch (header) {
-            case 'Ubicación':
-                return 'location__name';
-            case 'Número de Procedimientos':
-                return 'count';
-            case 'Costo Total':
-                return 'total_cost_sum';
-            case 'Firmante':
-                return 'signed_by__username';
-            case 'Artículo de Inventario':
-                return 'inventory_item__name';
-            case 'Estado':
-                return 'status';
-            case 'Método de Pago':
-                return 'payment_method';
-            case 'Estado de Pago':
-                return 'payment_status';
-            case 'Número de Procedimientos':
-            case 'Número de Pacientes':
-            case 'Número de Pagos':
-                return 'count';
-            default:
-                return '';
+        if (reportType === 'patient_balances') {
+            switch (header) {
+                case 'Paciente': return 'patient_name';
+                case 'Total de Tratamientos Pendientes': return 'total_procedures';
+                case 'Total de Pagos Pendientes': return 'total_payments';
+                case 'Total Pendiente': return 'calculated_balance';
+                case 'Saldo a Favor': return 'amount_in_favor';
+            }
+        } else {
+            switch (header) {
+                case 'Ubicación':
+                    return 'location__name';
+                case 'Número de Procedimientos':
+                    return 'count';
+                case 'Costo Total':
+                    return 'total_cost_sum';
+                case 'Firmante':
+                    return 'signed_by__username';
+                case 'Artículo de Inventario':
+                    return 'inventory_item__name';
+                case 'Estado':
+                    return 'status';
+                case 'Método de Pago':
+                    return 'payment_method';
+                case 'Estado de Pago':
+                    return 'payment_status';
+                case 'Número de Procedimientos':
+                case 'Número de Pacientes':
+                case 'Número de Pagos':
+                    return 'count';
+                default:
+                    return '';
+            }
         }
     }
 
@@ -214,6 +285,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return 'payment_method';
             case 'procedures_by_payment_status':
                 return 'payment_status';
+            case 'patient_balances':
+                return 'id';  // Assuming we use the patient's ID
             default:
                 return '';
         }

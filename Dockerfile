@@ -1,52 +1,25 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12-slim-bullseye
+FROM python:3.12-alpine
 
-# Set environment variables
+# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set work directory
+COPY ./requirements.txt /.
+
 WORKDIR /app
 
-# Install core dependencies.
-RUN apt-get update && apt-get install -y \
-    netcat-openbsd \
-    build-essential \
-    libpq-dev \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+RUN  apk update \
+	&& apk add --no-cache gcc musl-dev postgresql-dev python3-dev libffi-dev \
+	&& pip install --upgrade pip
 
-# install dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+COPY ./requirements.txt ./
 
-# Copy project
-COPY . /app/
+RUN pip install -r requirements.txt
 
-# # Set the entrypoint
-# ENTRYPOINT ["/app/docker-entrypoint.sh"]
+COPY . .
 
-COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 8000
 
+# RUN chmod +x entrypoint.sh
 
-# Make sure gunicorn is installed
-RUN pip install gunicorn
-
-# Create a startup script in a location that won't be overwritten
-RUN echo '#!/bin/sh' > /start.sh && \
-    echo 'set -e' >> /start.sh && \
-    echo 'cd /app' >> /start.sh && \
-    echo 'until nc -z $DB_HOST $DB_PORT; do' >> /start.sh && \
-    echo '  echo "Waiting for database to be ready..."' >> /start.sh && \
-    echo '  sleep 2' >> /start.sh && \
-    echo 'done' >> /start.sh && \
-    echo 'python manage.py migrate' >> /start.sh && \
-    echo 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8090' >> /start.sh && \
-    chmod +x /start.sh
-
-# Expose port 8090
-EXPOSE 8090
-
-# Set the command to run the startup script
-CMD ["/start.sh"]
+# CMD ["sh", "entrypoint.sh"]

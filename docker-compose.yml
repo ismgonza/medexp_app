@@ -1,42 +1,37 @@
-version: '3.8'
-
 services:
-  web:
+  backend:
+    build: .
     restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8090"  # Map container port 8000 to host port 8001
+    expose:
+      - "8000"
     volumes:
-      - /volume1/docker/medexp:/app
-    environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-    networks:
-      - app-network
+      - .:/app
+      - /var/www/static/:/var/www/static/
+      - /var/certbot/conf:/etc/letsencrypt/:ro
+    env_file: .env_prod
+    command: >
+      sh -c "python manage.py collectstatic --no-input &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
+             gunicorn config.wsgi:application --workers 3 --timeout 120 --bind 0.0.0.0:8000"
 
   nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
+    image: nginx:alpine
+    restart: unless-stopped
     ports:
-      - "8888:80"
+      - "8010:8010"
+      # - "443:443"
     volumes:
-      - /volume1/docker/medexp:/app
-      # - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /var/www/static/:/var/www/static/
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
     depends_on:
-      - web
-    networks:
-      - app-network
-    command: nginx -g 'daemon off;'
+      - backend
 
-
-networks:
-  app-network:
-    driver: bridge
+  # certbot:
+  #   image: certbot/certbot:latest
+  #   volumes:
+  #     - /var/certbot/conf:/etc/letsencrypt/:rw
+  #     - /var/certbot/www/:/var/www/certbot/:rw
+  #   depends_on:
+  #     - nginx
+  #   command: docker-compose run --rm certbot certonly --webroot --webroot-path=/var/www/certbot --email igonrod@icloud.com --agree-tos --no-eff-email -d vgclinic.com

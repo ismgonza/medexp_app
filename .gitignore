@@ -18,7 +18,12 @@ env/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-migrations
+database/
+**/migrations/*
+staticfiles/*
+
+# But don't ignore __init__.py files in migrations folders
+!**/migrations/__init__.py
 
 # IDE-specific files
 .vscode/
@@ -30,3 +35,4 @@ Thumbs.db
 
 # Other Files
 static/js/cr_padron_*.json
+medexp_app.code-workspace

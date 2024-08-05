@@ -10,13 +10,9 @@ from procedures.models import Procedure
 from patients.models import PatientBalance
 from .filters import PaymentFilter
 from django.shortcuts import get_object_or_404
-from django.db.models import ExpressionWrapper, Sum, F, Value, DecimalField
-from django.db.models.functions import Coalesce
-from django.core.paginator import Paginator
 from decimal import Decimal
 from django.contrib import messages
 from patients.models import PatientBalance, CreditTransaction
-from patients.views import PatientBalanceListView
 
 class PaymentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     permission_required = 'payments.add_payment'
@@ -118,15 +114,4 @@ class PaymentListView(LoginRequiredMixin, PermissionRequiredMixin, FilterView):
         context = super().get_context_data(**kwargs)
         context['payment_method_choices'] = Payment.PAYMENT_METHOD_CHOICES
         context['paginate_by'] = self.get_paginate_by(self.get_queryset())
-
-        # Get patient balance data using PatientBalanceListView
-        patient_balance_view = PatientBalanceListView()
-        patient_balance_view.request = self.request
-        patient_balance_queryset = patient_balance_view.get_queryset()
-
-        # Paginate the balances
-        balance_paginator = Paginator(patient_balance_queryset, self.get_paginate_by(patient_balance_queryset))
-        balance_page = self.request.GET.get('balance_page', 1)
-        context['balances'] = balance_paginator.get_page(balance_page)
-
         return context
