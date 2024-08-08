@@ -11,7 +11,7 @@ load_dotenv(Path.joinpath(BASE_DIR, '.env_prod'))
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+DEBUG = False
 
 # SECURE_SSL_REDIRECT = True
 # SESSION_COOKIE_SECURE = True
