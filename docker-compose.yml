@@ -15,18 +15,17 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-      # - "443:443"
+      - "443:443"
     volumes:
       - /var/www/static/:/var/www/static/
       - ./nginx/conf.d/:/etc/nginx/conf.d/
     depends_on:
       - backend
 
-  # certbot:
-  #   image: certbot/certbot:latest
-  #   volumes:
-  #     - /var/certbot/conf:/etc/letsencrypt/:rw
-  #     - /var/certbot/www/:/var/www/certbot/:rw
-  #   depends_on:
-  #     - nginx
-  #   command: docker-compose run --rm certbot certonly --webroot --webroot-path=/var/www/certbot --email igonrod@icloud.com --agree-tos --no-eff-email -d vgclinic.com
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - /var/certbot/conf:/etc/letsencrypt/:rw
+      - /var/certbot/www/:/var/www/certbot/:rw
+    depends_on:
+      - nginx
