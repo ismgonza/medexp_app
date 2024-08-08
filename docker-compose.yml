@@ -19,6 +19,7 @@ services:
     volumes:
       - /var/www/static/:/var/www/static/
       - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - /var/certbot/www/:/var/www/certbot/:ro
     depends_on:
       - backend
 
