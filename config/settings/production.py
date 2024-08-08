@@ -20,8 +20,8 @@ CSRF_COOKIE_SECURE = True
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # SECURE_HSTS_PRELOAD = True
 
-ALLOWED_HOSTS = ['portal.vgclinic.com', '*']
-# CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://portal.vgclinic.com']
+ALLOWED_HOSTS = ['vgclinic.com', 'portal.vgclinic.com', 'www.vgclinic.com']
+CSRF_TRUSTED_ORIGINS = ['https://vgclinic.com', 'https://portal.vgclinic.com', 'https://www.vgclinic.com']
 # USE_X_FORWARDED_HOST = True
 
 
