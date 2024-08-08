@@ -13,16 +13,17 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = False
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False  # Nginx is handling the redirect
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_DOMAIN = '.vgclinic.com'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+ALLOWED_HOSTS = ['vgclinic.com', 'portal.vgclinic.com', 'www.vgclinic.com']
+CSRF_TRUSTED_ORIGINS = ['https://vgclinic.com', 'https://portal.vgclinic.com', 'https://www.vgclinic.com']
+
 # SECURE_HSTS_SECONDS = 31536000  # 1 year
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # SECURE_HSTS_PRELOAD = True
-
-ALLOWED_HOSTS = ['vgclinic.com', 'portal.vgclinic.com', 'www.vgclinic.com']
-CSRF_TRUSTED_ORIGINS = ['https://vgclinic.com', 'https://portal.vgclinic.com', 'https://www.vgclinic.com']
 # USE_X_FORWARDED_HOST = True
 
 
