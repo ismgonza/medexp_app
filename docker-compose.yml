@@ -6,7 +6,8 @@ services:
       - "8000"
     volumes:
       - .:/app
-      - /var/www/static/:/var/www/static/
+      # - /var/www/static/:/var/www/static/
+      - static_volume:/var/www/static/
       - /var/certbot/conf:/etc/letsencrypt/:ro
     env_file: .env_prod
 
@@ -17,7 +18,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /var/www/static/:/var/www/static/
+      # - /var/www/static/:/var/www/static/
+      - static_volume:/var/www/static/
       - ./nginx/conf.d/:/etc/nginx/conf.d/
       # - /var/certbot/www/:/var/www/certbot/:rw
       - /var/certbot/conf:/etc/letsencrypt:ro
@@ -31,3 +33,6 @@ services:
       - /var/certbot/www/:/var/www/certbot/:rw
     depends_on:
       - nginx
+
+volumes:
+  static_volume:
