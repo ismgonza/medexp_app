@@ -45,7 +45,8 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
+# STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
+STATIC_ROOT = '/app/staticfiles'
 STATICFILES_DIRS = [
     Path.joinpath(BASE_DIR, 'static'),
 ]
