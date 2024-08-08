@@ -13,10 +13,18 @@ LOGGING = {
         "level": "WARNING",
     },
     "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
-            "propagate": False,
+        # "django": {
+        #     "handlers": ["console"],
+        #     "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+        #     "propagate": False,
+        # },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
         },
+        # 'django.contrib.sessions': {
+        #     'handlers': ['console'],
+        #     'level': 'DEBUG',
+        # },
     },
 }

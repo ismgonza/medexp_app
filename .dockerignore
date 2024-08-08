@@ -1,8 +1,8 @@
 # Ignore migration cache files
-**/migrations/__pycache__/
+# **/migrations/__pycache__/
 
 # Ignore other cache directories
-**/__pycache__/
+# **/__pycache__/
 
 # Other standard ignores
 *.pyc

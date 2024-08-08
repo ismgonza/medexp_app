@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from config.logging import *
 
 # Load environment variables from .env file
-load_dotenv(Path.joinpath(BASE_DIR, '.env'))
+load_dotenv(Path.joinpath(BASE_DIR, '.env_prod'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -20,7 +20,10 @@ DEBUG = True
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # SECURE_HSTS_PRELOAD = True
 
-ALLOWED_HOSTS = ['vgclinic.com', '*']
+ALLOWED_HOSTS = ['portal.vgclinic.com', '*']
+# CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://portal.vgclinic.com']
+# USE_X_FORWARDED_HOST = True
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

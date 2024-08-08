@@ -9,17 +9,12 @@ services:
       - /var/www/static/:/var/www/static/
       - /var/certbot/conf:/etc/letsencrypt/:ro
     env_file: .env_prod
-    command: >
-      sh -c "python manage.py collectstatic --no-input &&
-             python manage.py makemigrations &&
-             python manage.py migrate &&
-             gunicorn config.wsgi:application --workers 3 --timeout 120 --bind 0.0.0.0:8000"
 
   nginx:
     image: nginx:alpine
     restart: unless-stopped
     ports:
-      - "8010:8010"
+      - "80:80"
       # - "443:443"
     volumes:
       - /var/www/static/:/var/www/static/

@@ -20,6 +20,6 @@ COPY . .
 
 EXPOSE 8000
 
-# RUN chmod +x entrypoint.sh
+RUN chmod +x entrypoint.sh
 
-# CMD ["sh", "entrypoint.sh"]
+CMD ["sh", "entrypoint.sh"]
