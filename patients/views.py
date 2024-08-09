@@ -186,10 +186,26 @@ class PadronSearchView(View):
         cache.set(f'person_{id_number}', person, timeout=3600)  # Cache for 1 hour
 
     def get_person_from_file(self, id_number):
-        file_path = os.path.join(settings.STATIC_ROOT, 'js', 'cr_padron_data.json')
-        with open(file_path, 'r') as file:
-            for line in file:
-                person = json.loads(line)
-                if person['id_number'] == id_number:
-                    return person
+        js_dir = os.path.join(settings.STATIC_ROOT, 'js')
+        padron_files = [f for f in os.listdir(js_dir) if f.startswith('cr_padron_') and f.endswith('.json')]
+        
+        if not padron_files:
+            return None  # No padron file found
+        
+        # Use the most recent file (assuming the date in the filename is in a format that sorts correctly)
+        latest_file = sorted(padron_files)[-1]
+        file_path = os.path.join(js_dir, latest_file)
+        
+        try:
+            with open(file_path, 'r') as file:
+                for line in file:
+                    person = json.loads(line)
+                    if person['id_number'] == id_number:
+                        return person
+        except json.JSONDecodeError:
+            # If the file is not in JSON Lines format, fall back to loading the entire file
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+                return next((person for person in data if person['id_number'] == id_number), None)
+        
         return None
