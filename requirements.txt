@@ -7,3 +7,4 @@ crispy-bootstrap5
 django-filter>=23.5
 django-auditlog==2.3.0
 whitenoise==6.5.0
+ijson==3.3.0
