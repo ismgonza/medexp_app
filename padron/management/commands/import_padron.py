@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Set up logging
-        logging.basicConfig(filename='/app/padron_import.log', level=logging.INFO,
+        logging.basicConfig(filename='/tmp/padron_import.log', level=logging.INFO,
                             format='%(asctime)s - %(levelname)s - %(message)s')
         logger = logging.getLogger(__name__)
 
@@ -78,4 +78,4 @@ class Command(BaseCommand):
         except Exception as e:
             logger.error(f'Error during import: {str(e)}', exc_info=True)
 
-        self.stdout.write(self.style.SUCCESS('Import process completed. Check /app/padron_import.log for details.'))
+        self.stdout.write(self.style.SUCCESS('Import process completed. Check /tmp/padron_import.log for details.'))
