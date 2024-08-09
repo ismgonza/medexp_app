@@ -1,3 +1,160 @@
+# Django Application Deployment Guide
+
+## Table of Contents
+- [Django Application Deployment Guide](#django-application-deployment-guide)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Static Files Configuration](#static-files-configuration)
+    - [Django Settings](#django-settings)
+    - [Docker Compose Configuration](#docker-compose-configuration)
+    - [Nginx Configuration](#nginx-configuration)
+  - [SSL Certificate Management](#ssl-certificate-management)
+    - [Certificate Renewal Script](#certificate-renewal-script)
+    - [Cron Job for Certificate Renewal](#cron-job-for-certificate-renewal)
+  - [Deployment and Maintenance](#deployment-and-maintenance)
+    - [Deploy/Update Application](#deployupdate-application)
+    - [Collect Static Files](#collect-static-files)
+    - [Reload Nginx](#reload-nginx)
+  - [Troubleshooting](#troubleshooting)
+    - [Check Static Files](#check-static-files)
+    - [View Nginx Logs](#view-nginx-logs)
+    - [Debug Steps](#debug-steps)
+  - [Notes](#notes)
+- [Padron Import Process](#padron-import-process)
+  - [Overview](#overview-1)
+  - [Prerequisites](#prerequisites)
+  - [Model](#model)
+  - [Import Command](#import-command)
+  - [Usage](#usage)
+  - [Process](#process)
+  - [Notes](#notes-1)
+  - [PadronSearchView](#padronsearchview)
+  - [Maintenance](#maintenance)
+
+## Overview
+This guide covers the deployment of a Django application using Docker, including static file serving, SSL certificate management, and key maintenance tasks.
+
+## Static Files Configuration
+
+### Django Settings
+```python
+STATIC_ROOT = '/app/staticfiles'
+STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MIDDLEWARE = [
+    # ... other middleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # ... other middleware
+]
+```
+
+### Docker Compose Configuration
+```yaml
+services:
+  backend:
+    # ... other configurations
+    volumes:
+      - .:/app
+      - ./staticfiles:/app/staticfiles
+      - /var/certbot/conf:/etc/letsencrypt/:ro
+    env_file: .env_prod
+
+  nginx:
+    # ... other configurations
+    volumes:
+      - ./staticfiles:/app/staticfiles
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - /var/certbot/conf:/etc/letsencrypt:ro
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - /var/certbot/conf:/etc/letsencrypt/:rw
+      - /var/certbot/www/:/var/www/certbot/:rw
+    depends_on:
+      - nginx
+```
+
+### Nginx Configuration
+```nginx
+location /static/ {
+    alias /app/staticfiles/;
+    expires 30d;
+    add_header Cache-Control "public, max-age=2592000";
+}
+```
+
+## SSL Certificate Management
+
+### Certificate Renewal Script
+Create `/root/medexp_app/renew_cert.sh`:
+```bash
+#!/bin/bash
+cd /root/medexp_app
+docker compose run --rm certbot renew --webroot --webroot-path=/var/www/certbot
+docker compose exec nginx nginx -s reload
+```
+
+Make it executable:
+```bash
+chmod +x /root/medexp_app/renew_cert.sh
+```
+
+### Cron Job for Certificate Renewal
+Add to crontab (`crontab -e`):
+```
+0 0 1,15 * * /root/medexp_app/renew_cert.sh >> /var/log/certbot_renewal.log 2>&1
+```
+
+## Deployment and Maintenance
+
+### Deploy/Update Application
+```bash
+git pull && docker compose down && docker compose up --build -d
+```
+
+### Collect Static Files
+```bash
+docker compose exec backend python manage.py collectstatic --noinput
+```
+
+### Reload Nginx
+```bash
+docker compose exec backend python manage.py collectstatic --noinput
+```
+
+## Troubleshooting
+
+### Check Static Files
+Backend container:
+```bash
+docker compose exec backend ls -l /app/staticfiles
+```
+
+Nginx container:
+```bash
+docker compose exec nginx ls -l /app/staticfiles
+```
+
+### View Nginx Logs
+```bash
+docker compose logs nginx
+```
+
+### Debug Steps
+1. Verify static files are collected correctly
+2. Ensure Nginx can access static files
+3. Check Nginx configuration
+4. Inspect browser's Network tab for 404 errors on static files
+5. Verify SSL certificate renewal process
+
+## Notes
+- Keep Docker Compose file, Nginx configuration, and Django settings consistent
+- Regularly backup the database before major updates
+- Monitor server resources during high-traffic periods
+- Update SSL certificates before expiration (auto-renewal should handle this)
+
 # Padron Import Process
 
 ## Overview
