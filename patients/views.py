@@ -145,67 +145,58 @@ class PatientSearchView(View):
         ]
         return JsonResponse(data, safe=False)
     
-# def load_padron_data():
-#     js_dir = os.path.join(settings.STATIC_ROOT, 'js')
-#     padron_files = [f for f in os.listdir(js_dir) if f.startswith('cr_padron_') and f.endswith('.json')]
-#     if not padron_files:
-#         return {}
-    
-#     file_path = os.path.join(js_dir, padron_files[0])
-#     with open(file_path, 'r') as file:
-#         padron_data = json.load(file)
-    
-#     return {person['id_number']: person for person in padron_data}
-
-# # Load data when Django starts
-# padron_index = load_padron_data()
-# cache.set('padron_index', padron_index, None)  # Cache indefinitely
-
 class PadronSearchView(View):
     def get(self, request, id_number):
-        person = self.get_person_from_cache(id_number)
-        if person is None:
-            person = self.get_person_from_file(id_number)
-            if person:
-                self.cache_person(id_number, person)
+        # Always return a "not found" response
+        return JsonResponse({
+            'found': False,
+            'message': 'Busqueda en el padron esta desactivada, Por favor ingrese los datos manualmente.'
+        })
+# class PadronSearchView(View):
+#     def get(self, request, id_number):
+#         person = self.get_person_from_cache(id_number)
+#         if person is None:
+#             person = self.get_person_from_file(id_number)
+#             if person:
+#                 self.cache_person(id_number, person)
         
-        if person:
-            return JsonResponse({
-                'found': True,
-                'first_name': person['first_name'],
-                'lastname1': person['lastname1'],
-                'lastname2': person['lastname2']
-            })
-        else:
-            return JsonResponse({'found': False})
+#         if person:
+#             return JsonResponse({
+#                 'found': True,
+#                 'first_name': person['first_name'],
+#                 'lastname1': person['lastname1'],
+#                 'lastname2': person['lastname2']
+#             })
+#         else:
+#             return JsonResponse({'found': False})
 
-    def get_person_from_cache(self, id_number):
-        return cache.get(f'person_{id_number}')
+#     def get_person_from_cache(self, id_number):
+#         return cache.get(f'person_{id_number}')
 
-    def cache_person(self, id_number, person):
-        cache.set(f'person_{id_number}', person, timeout=3600)  # Cache for 1 hour
+#     def cache_person(self, id_number, person):
+#         cache.set(f'person_{id_number}', person, timeout=3600)  # Cache for 1 hour
 
-    def get_person_from_file(self, id_number):
-        js_dir = os.path.join(settings.STATIC_ROOT, 'js')
-        padron_files = [f for f in os.listdir(js_dir) if f.startswith('cr_padron_') and f.endswith('.json')]
+#     def get_person_from_file(self, id_number):
+#         js_dir = os.path.join(settings.STATIC_ROOT, 'js')
+#         padron_files = [f for f in os.listdir(js_dir) if f.startswith('cr_padron_') and f.endswith('.json')]
         
-        if not padron_files:
-            return None  # No padron file found
+#         if not padron_files:
+#             return None  # No padron file found
         
-        # Use the most recent file (assuming the date in the filename is in a format that sorts correctly)
-        latest_file = sorted(padron_files)[-1]
-        file_path = os.path.join(js_dir, latest_file)
+#         # Use the most recent file (assuming the date in the filename is in a format that sorts correctly)
+#         latest_file = sorted(padron_files)[-1]
+#         file_path = os.path.join(js_dir, latest_file)
         
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    person = json.loads(line)
-                    if person['id_number'] == id_number:
-                        return person
-        except json.JSONDecodeError:
-            # If the file is not in JSON Lines format, fall back to loading the entire file
-            with open(file_path, 'r') as file:
-                data = json.load(file)
-                return next((person for person in data if person['id_number'] == id_number), None)
+#         try:
+#             with open(file_path, 'r') as file:
+#                 for line in file:
+#                     person = json.loads(line)
+#                     if person['id_number'] == id_number:
+#                         return person
+#         except json.JSONDecodeError:
+#             # If the file is not in JSON Lines format, fall back to loading the entire file
+#             with open(file_path, 'r') as file:
+#                 data = json.load(file)
+#                 return next((person for person in data if person['id_number'] == id_number), None)
         
-        return None
+#         return None
