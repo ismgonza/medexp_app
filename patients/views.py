@@ -146,7 +146,7 @@ class PatientSearchView(View):
         return JsonResponse(data, safe=False)
     
 def load_padron_data():
-    js_dir = os.path.join(settings.BASE_DIR, 'static', 'js')
+    js_dir = os.path.join(settings.STATIC_ROOT, 'js')
     padron_files = [f for f in os.listdir(js_dir) if f.startswith('cr_padron_') and f.endswith('.json')]
     if not padron_files:
         return {}
