@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 
 class ReportsDashboardView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'reports/dashboard.html'
-    permission_required = 'reports.view_reports'
+    permission_required = 'reports.view_report'
 
     def get(self, request, *args, **kwargs):
         if 'report_type' in request.GET:
@@ -85,7 +85,7 @@ class ReportsDashboardView(LoginRequiredMixin, PermissionRequiredMixin, Template
     
     
 class ReportDetailView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = 'reports.view_reports'
+    permission_required = 'reports.view_report'
     items_per_page = 10
 
     def get(self, request, *args, **kwargs):
