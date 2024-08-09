@@ -1,4 +1,5 @@
 import json
+import time
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from padron.models import Padron
@@ -25,22 +26,23 @@ class Command(BaseCommand):
             with open(file_path, 'r') as file:
                 data = json.load(file)
 
-            with transaction.atomic():
-                # Create a set of all existing id_numbers
-                existing_ids = set(Padron.objects.values_list('id_number', flat=True))
+            self.stdout.write(f"Loaded {len(data)} entries from JSON file")
 
-                # Prepare bulk create and update lists
+            start_time = time.time()
+            with transaction.atomic():
+                existing_ids = set(Padron.objects.values_list('id_number', flat=True))
+                self.stdout.write(f"Found {len(existing_ids)} existing entries in database")
+
                 to_create = []
                 to_update = []
 
-                for item in data:
+                for i, item in enumerate(data, 1):
                     if item['id_number'] in existing_ids:
                         to_update.append(Padron(
                             id_number=item['id_number'],
                             first_name=item['first_name'],
                             lastname1=item['lastname1'],
                             lastname2=item['lastname2'],
-                            # Keep existing 'deceased' status for updates
                         ))
                     else:
                         to_create.append(Padron(
@@ -48,15 +50,24 @@ class Command(BaseCommand):
                             first_name=item['first_name'],
                             lastname1=item['lastname1'],
                             lastname2=item['lastname2'],
-                            deceased=False  # New entries are not deceased by default
+                            deceased=False
                         ))
 
-                # Bulk create new entries
-                Padron.objects.bulk_create(to_create)
+                    if i % 10000 == 0:
+                        self.stdout.write(f"Processed {i}/{len(data)} entries")
 
-                # Bulk update existing entries
-                Padron.objects.bulk_update(to_update, ['first_name', 'lastname1', 'lastname2'])
+                self.stdout.write(f"Creating {len(to_create)} new entries")
+                Padron.objects.bulk_create(to_create, batch_size=5000)
 
-            self.stdout.write(self.style.SUCCESS(f'Import completed successfully. Created {len(to_create)} new entries and updated {len(to_update)} existing entries.'))
+                self.stdout.write(f"Updating {len(to_update)} existing entries")
+                Padron.objects.bulk_update(to_update, ['first_name', 'lastname1', 'lastname2'], batch_size=5000)
+
+            end_time = time.time()
+            duration = end_time - start_time
+            self.stdout.write(self.style.SUCCESS(f'Import completed successfully in {duration:.2f} seconds. Created {len(to_create)} new entries and updated {len(to_update)} existing entries.'))
+            
+            final_count = Padron.objects.count()
+            self.stdout.write(f"Final count in Padron table: {final_count}")
+
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Error during import: {str(e)}'))
