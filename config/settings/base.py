@@ -25,6 +25,7 @@ LOCAL_APPS = [
     'locations',
     'payments',
     'inventory',
+    'padron',
 ]
 THIRD_APPS = [
     'crispy_forms',
