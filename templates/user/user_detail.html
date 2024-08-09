@@ -36,11 +36,13 @@
         </div>
     <hr>
     <div class="right-aligned">
-        <a href="{% url 'user_update' user.pk %}" class="btn btn-primary">Editar</a>
-        {% if perms.core.delete_user %}
-        <a href="{% url 'user_delete' user.id %}" class="btn btn-danger">Eliminar</a>
+        {% if perms.core.change_user %}
+            <a href="{% url 'user_update' user.pk %}" class="btn btn-primary">Editar</a>
         {% endif %}
-        <a href="{% url 'user_list' %}" class="btn btn-secondary">Volver a la Lista</a>
+        {% if perms.core.delete_user %}
+            <a href="{% url 'user_delete' user.id %}" class="btn btn-danger">Eliminar</a>
+        {% endif %}
+            <a href="{% url 'user_list' %}" class="btn btn-secondary">Volver a la Lista</a>
     </div>
 </div>
 {% endblock %}
