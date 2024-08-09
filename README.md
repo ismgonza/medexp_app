@@ -189,11 +189,17 @@ Located in `padron/management/commands/import_padron.py`, this command uses `ijs
 
 ## Usage
 1. Upload the cr_padron file to the Docker Host
-   `scp -i ~/.ssh/vgclinic.key cr_padron_XXXXXXXXX.json root@165.22.185.21:/root/medexp_app/`
+   ```
+   scp -i ~/.ssh/vgclinic.key cr_padron_XXXXXXXXX.json root@165.22.185.21:/root/medexp_app/
+   ```
 2. Copy the cr_padron_XXXXXXXXX.json to the docker container
-   `docker cp cr_padron_XXXXXXXXX.json medexp_app-backend-1:/app/cr_padron_XXXXXXXXX.json`
+   ```
+   docker cp cr_padron_XXXXXXXXX.json medexp_app-backend-1:/app/cr_padron_XXXXXXXXX.json
+   ```
 3. Ensure the JSON file is in the Django project's root directory.
-   `docker exec -it medexp_app-backend-1 ls -l /app/cr_padron_XXXXXXXXX.json`
+   ```
+   docker exec -it medexp_app-backend-1 ls -l /app/cr_padron_XXXXXXXXX.json
+   ```
 4. Run the command:
    ```
    docker exec -it medexp_app-backend-1 python manage.py import_padron cr_padron_XXXXXXXXX.json --settings=config.settings.production
