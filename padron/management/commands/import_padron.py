@@ -14,34 +14,37 @@ class Command(BaseCommand):
         parser.add_argument('filename', type=str, help='Name of the JSON file to import')
 
     def handle(self, *args, **options):
-        # Set up logging
-        logging.basicConfig(filename='/tmp/padron_import.log', level=logging.INFO,
-                            format='%(asctime)s - %(levelname)s - %(message)s')
-        logger = logging.getLogger(__name__)
-
+        print("Starting import process")
+        
         filename = options['filename']
         file_path = os.path.join(settings.BASE_DIR, filename)
 
+        print(f"File path: {file_path}")
+
         if not os.path.exists(file_path):
-            logger.error(f'File not found: {file_path}')
+            print(f'File not found: {file_path}')
             return
 
-        logger.info(f'Starting import from {file_path}')
+        print(f'Starting import from {file_path}')
 
         try:
+            print("Opening file")
             with open(file_path, 'r') as file:
+                print("Loading JSON data")
                 data = json.load(file)
 
-            logger.info(f"Loaded {len(data)} entries from JSON file")
+            print(f"Loaded {len(data)} entries from JSON file")
 
             start_time = time.time()
+            print("Starting database transaction")
             with transaction.atomic():
                 existing_ids = set(Padron.objects.values_list('id_number', flat=True))
-                logger.info(f"Found {len(existing_ids)} existing entries in database")
+                print(f"Found {len(existing_ids)} existing entries in database")
 
                 to_create = []
                 to_update = []
 
+                print("Processing entries")
                 for i, item in enumerate(data, 1):
                     if item['id_number'] in existing_ids:
                         to_update.append(Padron(
@@ -60,22 +63,24 @@ class Command(BaseCommand):
                         ))
 
                     if i % 10000 == 0:
-                        logger.info(f"Processed {i}/{len(data)} entries")
+                        print(f"Processed {i}/{len(data)} entries")
 
-                logger.info(f"Creating {len(to_create)} new entries")
+                print(f"Creating {len(to_create)} new entries")
                 Padron.objects.bulk_create(to_create, batch_size=5000)
 
-                logger.info(f"Updating {len(to_update)} existing entries")
+                print(f"Updating {len(to_update)} existing entries")
                 Padron.objects.bulk_update(to_update, ['first_name', 'lastname1', 'lastname2'], batch_size=5000)
 
             end_time = time.time()
             duration = end_time - start_time
-            logger.info(f'Import completed successfully in {duration:.2f} seconds. Created {len(to_create)} new entries and updated {len(to_update)} existing entries.')
+            print(f'Import completed successfully in {duration:.2f} seconds. Created {len(to_create)} new entries and updated {len(to_update)} existing entries.')
             
             final_count = Padron.objects.count()
-            logger.info(f"Final count in Padron table: {final_count}")
+            print(f"Final count in Padron table: {final_count}")
 
         except Exception as e:
-            logger.error(f'Error during import: {str(e)}', exc_info=True)
+            print(f'Error during import: {str(e)}')
+            import traceback
+            print(traceback.format_exc())
 
-        self.stdout.write(self.style.SUCCESS('Import process completed. Check /tmp/padron_import.log for details.'))
+        self.stdout.write(self.style.SUCCESS('Import process completed.'))
