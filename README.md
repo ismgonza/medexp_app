@@ -17,6 +17,7 @@
     - [Reload Nginx](#reload-nginx)
   - [Troubleshooting](#troubleshooting)
     - [Check Static Files](#check-static-files)
+    - [View Backend Logs](#view-backend-logs)
     - [View Nginx Logs](#view-nginx-logs)
     - [Debug Steps](#debug-steps)
   - [Notes](#notes)
@@ -135,6 +136,11 @@ docker compose exec backend ls -l /app/staticfiles
 Nginx container:
 ```bash
 docker compose exec nginx ls -l /app/staticfiles
+```
+
+### View Backend Logs
+```bash
+docker compose backend nginx
 ```
 
 ### View Nginx Logs
