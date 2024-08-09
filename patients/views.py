@@ -157,9 +157,9 @@ def load_padron_data():
     
     return {person['id_number']: person for person in padron_data}
 
-# # Load data when Django starts
-# padron_index = load_padron_data()
-# cache.set('padron_index', padron_index, None)  # Cache indefinitely
+# Load data when Django starts
+padron_index = load_padron_data()
+cache.set('padron_index', padron_index, None)  # Cache indefinitely
 
 class PadronSearchView(View):
     def get(self, request, id_number):

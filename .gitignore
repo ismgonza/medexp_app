@@ -36,3 +36,4 @@ Thumbs.db
 # Other Files
 static/js/cr_padron_*.json
 medexp_app.code-workspace
+parse_padron.py
