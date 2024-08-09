@@ -145,30 +145,30 @@ class PatientSearchView(View):
         ]
         return JsonResponse(data, safe=False)
     
-def load_padron_data():
-    js_dir = os.path.join(settings.STATIC_ROOT, 'js')
-    padron_files = [f for f in os.listdir(js_dir) if f.startswith('cr_padron_') and f.endswith('.json')]
-    if not padron_files:
-        return {}
+# def load_padron_data():
+#     js_dir = os.path.join(settings.STATIC_ROOT, 'js')
+#     padron_files = [f for f in os.listdir(js_dir) if f.startswith('cr_padron_') and f.endswith('.json')]
+#     if not padron_files:
+#         return {}
     
-    file_path = os.path.join(js_dir, padron_files[0])
-    with open(file_path, 'r') as file:
-        padron_data = json.load(file)
+#     file_path = os.path.join(js_dir, padron_files[0])
+#     with open(file_path, 'r') as file:
+#         padron_data = json.load(file)
     
-    return {person['id_number']: person for person in padron_data}
+#     return {person['id_number']: person for person in padron_data}
 
-# Load data when Django starts
-padron_index = load_padron_data()
-cache.set('padron_index', padron_index, None)  # Cache indefinitely
+# # Load data when Django starts
+# padron_index = load_padron_data()
+# cache.set('padron_index', padron_index, None)  # Cache indefinitely
 
 class PadronSearchView(View):
     def get(self, request, id_number):
-        padron_index = cache.get('padron_index')
-        if padron_index is None:
-            padron_index = load_padron_data()
-            cache.set('padron_index', padron_index, None)
+        person = self.get_person_from_cache(id_number)
+        if person is None:
+            person = self.get_person_from_file(id_number)
+            if person:
+                self.cache_person(id_number, person)
         
-        person = padron_index.get(id_number)
         if person:
             return JsonResponse({
                 'found': True,
@@ -178,3 +178,18 @@ class PadronSearchView(View):
             })
         else:
             return JsonResponse({'found': False})
+
+    def get_person_from_cache(self, id_number):
+        return cache.get(f'person_{id_number}')
+
+    def cache_person(self, id_number, person):
+        cache.set(f'person_{id_number}', person, timeout=3600)  # Cache for 1 hour
+
+    def get_person_from_file(self, id_number):
+        file_path = os.path.join(settings.STATIC_ROOT, 'js', 'cr_padron_data.json')
+        with open(file_path, 'r') as file:
+            for line in file:
+                person = json.loads(line)
+                if person['id_number'] == id_number:
+                    return person
+        return None
