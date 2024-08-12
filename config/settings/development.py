@@ -34,7 +34,8 @@ DATABASES = {
     }
 }
 
-# STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
-# STATICFILES_DIRS = [
-# Path.joinpath(BASE_DIR, 'static'),
-# ]
+STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    Path.joinpath(BASE_DIR, 'static'),
+]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
