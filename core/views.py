@@ -86,8 +86,6 @@ class UserUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     permission_required = 'core.change_user'
 
     def form_valid(self, form):
-        # If the password field is empty, remove it from the form
-        # to prevent overwriting with an empty string
         if not form.cleaned_data.get('password'):
             del form.cleaned_data['password']
         return super().form_valid(form)
@@ -142,6 +140,7 @@ class UserProfileView(LoginRequiredMixin, View):
             if user_form.is_valid():
                 user_form.save()
                 messages.success(request, _('Su perfil ha sido actualizado.'))
+                return redirect('user_profile')
             password_form = CustomPasswordChangeForm(user=request.user)
         elif 'change_password' in request.POST:
             password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
@@ -149,6 +148,7 @@ class UserProfileView(LoginRequiredMixin, View):
                 user = password_form.save()
                 update_session_auth_hash(request, user)
                 messages.success(request, _('Su contraseña ha sido actualizada.'))
+                return redirect('user_profile')
             user_form = UserProfileForm(instance=request.user)
         else:
             user_form = UserProfileForm(instance=request.user)
