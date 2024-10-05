@@ -39,14 +39,28 @@
         {{ form.dental_piece|as_crispy_field }}
         {{ form.notes|as_crispy_field }}
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 {{ form.item_count|as_crispy_field }}
             </div>
-            <div class="col-md-4">
-                {{ form.total_cost|as_crispy_field }}
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="{{ form.unit_price.id_for_label }}">{{ form.unit_price.label }}</label>
+                    <input type="{{ form.unit_price.field.widget.input_type }}" 
+                           name="{{ form.unit_price.name }}" 
+                           class="form-control {% if form.unit_price.errors %}is-invalid{% endif %}" 
+                           id="{{ form.unit_price.id_for_label }}"
+                           value="{{ form.unit_price.value|default:'' }}"
+                           {% if not form.instance.inventory_item.variable_price %}readonly{% endif %}>
+                    {% for error in form.unit_price.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 {{ form.discount|as_crispy_field }}
+            </div>
+            <div class="col-md-3">
+                {{ form.total_cost|as_crispy_field }}
             </div>
         </div>
 

@@ -1,18 +1,17 @@
 {% extends "inventory/base_inventory.html" %}
 {% load crispy_forms_tags %}
-
 {% block inventory_content %}
 <h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Inventario</h2>
 <hr>
 <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <div class="right-aligned">
-    {% if perms.inventory.change_inventoryitem %}
+    <div class="text-right">
+        {% if perms.inventory.change_inventoryitem %}
         <button type="submit" class="btn btn-primary">
             {% if form.instance.pk %}Actualizar{% else %}Registrar{% endif %}
         </button>
-    {% endif %}
+        {% endif %}
         <a href="{% url 'inventory_list' %}" class="btn btn-secondary">Volver a Inventarios</a>
     </div>
 </form>

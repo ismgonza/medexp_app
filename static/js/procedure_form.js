@@ -6,8 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalCostInput = document.getElementById('id_total_cost');
     const itemCountInput = document.getElementById('id_item_count');
     const discountInput = document.getElementById('id_discount');
+    const unitPriceInput = document.getElementById('id_unit_price');
 
     let selectedItemPrice = 0;
+    let selectedItemVariablePrice = false;
     let currentFocus = -1;
 
     function clearResults() {
@@ -21,8 +23,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCosts() {
         const itemCount = itemCountInput && itemCountInput.value ? parseInt(itemCountInput.value) : 1;
         const discount = discountInput && discountInput.value ? parseFloat(discountInput.value) : 0;
-        if (selectedItemPrice) {
-            const initialCost = selectedItemPrice * itemCount;
+        const unitPrice = unitPriceInput && unitPriceInput.value ? parseFloat(unitPriceInput.value) : selectedItemPrice;
+
+        if (unitPrice) {
+            const initialCost = unitPrice * itemCount;
             const totalCost = Math.max(initialCost - discount, 0).toFixed(2);
             if (totalCostInput) totalCostInput.value = totalCost;
         } else if (totalCostInput) {
@@ -39,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     let results = '';
                     data.forEach((item, index) => {
                         results += `
-                            <div class="search-item" data-index="${index}" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">
+                            <div class="search-item" data-index="${index}" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}" data-variable-price="${item.variable_price}">
                                 <span class="service-code">(${item.code})</span>
                                 <span class="service-name">${item.name}</span>
                             </div>`;
@@ -122,11 +126,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const id = item.getAttribute('data-id');
         const name = item.getAttribute('data-name');
         const price = parseFloat(item.getAttribute('data-price'));
+        const variablePrice = item.getAttribute('data-variable-price') === 'true';
 
         if (serviceSearch) serviceSearch.value = name;
         if (procedureTypeInput) procedureTypeInput.value = name;
         if (inventoryItemInput) inventoryItemInput.value = id;
         selectedItemPrice = price;
+        selectedItemVariablePrice = variablePrice;
+
+        if (unitPriceInput) {
+            unitPriceInput.value = price.toFixed(2);
+            if (variablePrice) {
+                unitPriceInput.removeAttribute('readonly');
+            } else {
+                unitPriceInput.setAttribute('readonly', 'readonly');
+            }
+        }
 
         clearResults();
         updateCosts();
@@ -134,6 +149,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (itemCountInput) itemCountInput.addEventListener('input', updateCosts);
     if (discountInput) discountInput.addEventListener('input', updateCosts);
+    if (unitPriceInput) {
+        unitPriceInput.addEventListener('input', function() {
+            selectedItemPrice = parseFloat(this.value) || 0;
+            updateCosts();
+        });
+    }
 
     document.addEventListener('click', function(e) {
         if (serviceSearch && serviceSearchResults && 
@@ -153,6 +174,44 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+    }
+
+    // New code for handling pre-filled values
+    if (procedureTypeInput && procedureTypeInput.value) {
+        if (serviceSearch) {
+            serviceSearch.value = procedureTypeInput.value;
+        }
+    }
+
+    if (inventoryItemInput && inventoryItemInput.value) {
+        const inventoryItemId = inventoryItemInput.value;
+        fetch(`/procedures/service-search/?query=${encodeURIComponent(inventoryItemId)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const item = data[0];
+                    selectItem({
+                        getAttribute: (attr) => {
+                            switch(attr) {
+                                case 'data-id': return item.id;
+                                case 'data-name': return item.name;
+                                case 'data-price': return item.price;
+                                case 'data-variable-price': return item.variable_price;
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // Initial setup
+    if (unitPriceInput && inventoryItemInput.value) {
+        // You might need to fetch the initial variable_price status from the server
+        // For now, we'll assume it's not variable if it's preselected
+        unitPriceInput.setAttribute('readonly', 'readonly');
     }
 
     updateCosts();
