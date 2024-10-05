@@ -122,7 +122,7 @@ docker compose exec backend python manage.py collectstatic --noinput
 
 ### Reload Nginx
 ```bash
-docker compose exec backend python manage.py collectstatic --noinput
+docker compose exec nginx nginx -s reload
 ```
 
 ## Troubleshooting
