@@ -10,7 +10,7 @@ class UserForm(UserChangeForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password', 'groups', 'is_active')
+        fields = ('username', 'first_name', 'last_name', 'email', 'groups', 'is_active')
         labels = {
             'username': _('Nombre de usuario'),
             'first_name': _('Nombre'),
@@ -18,14 +18,6 @@ class UserForm(UserChangeForm):
             'email': _('Correo'),
             'groups': _('Grupos'),
             'is_active': _('Activo'),
-        }
-        help_texts = {
-            'username': _('Requerido. 150 caracteres o menos. Letras, dígitos y @/./+/-/_ solamente.'),
-            'first_name': _('Ingrese el nombre del usuario.'),
-            'last_name': _('Ingrese el apellido del usuario.'),
-            'email': _('Ingrese una dirección de correo electrónico válida.'),
-            'groups': _('Seleccione los grupos a los que pertenece este usuario.'),
-            'is_active': _('Indica si el usuario debe ser tratado como activo. Desmarque esto en lugar de eliminar cuentas.'),
         }
 
     def __init__(self, *args, **kwargs):
@@ -36,22 +28,11 @@ class UserForm(UserChangeForm):
             self.fields['password'].required = True
             self.fields['password'].help_text = _("Ingrese una contraseña segura.")
 
-        if 'is_staff' in self.fields:
-            del self.fields['is_staff']
-        
-        # Exclude superadmin group if it exists
-        try:
-            superadmin_group = Group.objects.get(name='superadmin')
-            self.fields['groups'].queryset = Group.objects.exclude(pk=superadmin_group.pk)
-        except Group.DoesNotExist:
-            pass
-
     def clean_password(self):
-        # If this is an existing user and the password field is left empty,
-        # return the current password
-        if self.instance.pk and not self.cleaned_data["password"]:
-            return self.instance.password
-        return self.cleaned_data["password"]
+        password = self.cleaned_data.get("password")
+        if self.instance.pk and not password:
+            return None
+        return password
 
     def save(self, commit=True):
         user = super().save(commit=False)
