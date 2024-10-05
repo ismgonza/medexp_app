@@ -1,6 +1,7 @@
 from config.settings.base import *
 from dotenv import load_dotenv
-from config.logging import *
+import os
+# from config.logging import *
 
 # Load environment variables from .env file
 load_dotenv(Path.joinpath(BASE_DIR, '.env_devel'))

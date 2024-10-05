@@ -17,7 +17,8 @@ class Procedure(models.Model):
     ]
 
     patient = models.ForeignKey('patients.Patient', on_delete=models.CASCADE, related_name='procedures')
-    procedure_date = models.DateField(default=timezone.now, editable=False)
+    # procedure_date = models.DateField(default=timezone.now, editable=False)
+    procedure_date = models.DateField(default=timezone.now)  # Remove editable=False
     procedure_type = models.CharField(max_length=100)
     dental_piece = models.CharField(max_length=100, blank=True, null=True)
     notes = models.TextField(blank=True)

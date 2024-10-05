@@ -1,8 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Acceso Denegado (403)</h1>
-<p>Usted no tiene permisos para ver esta página.</p>
-<p>Si considera que esto es un error, contacte al administrador del sitio.</p>
-<a href="{% url 'home' %}">Volver a la página de Inicio</a>
+<style>
+    #error-403 .error-code {
+        font-size: 120px;
+        font-weight: bold;
+        color: #e74c3c;
+        margin: 0 0 20px 0;
+        line-height: 1;
+    }
+    #error-403 .error-title {
+        font-size: 36px;
+        font-weight: bold;
+        margin: 0 0 25px 0;
+        color: #333;
+    }
+    #error-403 .error-message {
+        font-size: 18px;
+        color: #666;
+        margin: 0 0 30px 0;
+        line-height: 1.5;
+    }
+    #error-403 .error-message p {
+        margin: 0 0 10px 0;
+    }
+    #error-403 .home-link {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background-color 0.3s;
+        font-size: 18px;
+    }
+    #error-403 .home-link:hover {
+        background-color: #2980b9;
+    }
+</style>
+
+<div id="error-403" style="width: 600px; margin: 60px auto; padding: 40px; text-align: center; background-color: #fff; border-radius: 12px;">
+    <div class="error-code">403</div>
+    <div class="error-title">Acceso Denegado</div>
+    <div class="error-message">
+        <p>Usted no tiene permisos para ver esta página.</p>
+        <p>Si considera que esto es un error, contacte al administrador del sitio.</p>
+    </div>
+    <a href="{% url 'home' %}" class="home-link">Volver a la página de Inicio</a>
+</div>
 {% endblock %}

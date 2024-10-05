@@ -44,9 +44,25 @@ class ProcedureCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
         return context
 
     def form_valid(self, form):
-        form.instance.procedure_date = timezone.now().date()
-        form.instance.signed_by = self.request.user
+        # form.instance.procedure_date = timezone.now().date()
+        # form.instance.signed_by = self.request.user
+        form.instance.patient = self.patient
+        if not form.instance.signed_by:
+            form.instance.signed_by = self.request.user
+        if not form.instance.procedure_date:
+            form.instance.procedure_date = timezone.now().date()
+            
+        # Add debugging
+        print(f"Form data: {form.cleaned_data}")
+        print(f"Form is valid: {form.is_valid()}")
+        
         return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        # Add debugging for invalid form
+        print(f"Form errors: {form.errors}")
+        return super().form_invalid(form)
+    
 
 class ProcedureUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     permission_required = 'procedures.change_procedure'
@@ -64,14 +80,26 @@ class ProcedureUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
         context['inventory_items'] = InventoryItem.objects.filter(active=True)
         context['patient'] = self.object.patient
         return context
-
-    def form_valid(self, form):
-        form.instance.updated_by = self.request.user
-        return super().form_valid(form)
-
+    
     def get_success_url(self):
         return reverse('patient_detail', kwargs={'pk': self.object.patient.pk}) + '#procedureTabs'
 
+    def form_valid(self, form):
+        if not form.instance.signed_by:
+            form.instance.signed_by = self.request.user
+        # form.instance.updated_by = self.request.user
+        
+        # Add debugging
+        print(f"Form data: {form.cleaned_data}")
+        print(f"Form is valid: {form.is_valid()}")
+        
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        # Add debugging for invalid form
+        print(f"Form errors: {form.errors}")
+        return super().form_invalid(form)
+    
 class ProcedureListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = 'procedures.view_procedure'
     model = Procedure
