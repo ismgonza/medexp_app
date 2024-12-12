@@ -11,7 +11,7 @@ class InventoryItem(models.Model):
         validators=[MinValueValidator(0)]
         )
     active = models.BooleanField(default=True)
-
+    variable_price = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.code} - {self.name}"

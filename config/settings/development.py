@@ -1,6 +1,7 @@
 from config.settings.base import *
 from dotenv import load_dotenv
-from config.logging import *
+import os
+# from config.logging import *
 
 # Load environment variables from .env file
 load_dotenv(Path.joinpath(BASE_DIR, '.env_devel'))
@@ -39,3 +40,6 @@ STATICFILES_DIRS = [
     Path.joinpath(BASE_DIR, 'static'),
 ]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@example.com'
