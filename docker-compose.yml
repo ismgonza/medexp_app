@@ -24,9 +24,12 @@ services:
       - backend
 
   certbot:
-    image: certbot/certbot:latest
+    image: certbot/dns-digitalocean:latest
     volumes:
       - /var/certbot/conf:/etc/letsencrypt/:rw
-      - /var/certbot/www/:/var/www/certbot/:rw
+      - /var/certbot/conf/dns-credentials:/etc/letsencrypt/dns-credentials:ro
+    environment:
+      - CERTBOT_EMAIL=igonrod@icloud.com
+    command: certonly --dns-digitalocean --dns-digitalocean-credentials /etc/letsencrypt/dns-credentials/digitalocean.ini -d vgclinic.com -d *.vgclinic.com --agree-tos -n
     depends_on:
       - nginx

@@ -38,6 +38,7 @@
     <div class="right-aligned">
         {% if perms.core.change_user %}
             <a href="{% url 'user_update' user.pk %}" class="btn btn-primary">Editar</a>
+            <a href="{% url 'reset_user_password' user.pk %}" class="btn btn-info">Resetear Contrasena</a>
         {% endif %}
         {% if perms.core.delete_user %}
             <a href="{% url 'user_delete' user.id %}" class="btn btn-danger">Eliminar</a>
