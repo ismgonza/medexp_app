@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -9,11 +9,16 @@ from .models import User, UserPreference
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
+from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 from django.core.paginator import Paginator
 from .forms import UserForm, UserProfileForm, CustomPasswordChangeForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.urls import reverse
+
 
 class CustomLoginView(LoginView):
     template_name = 'core/login.html'
@@ -158,3 +163,27 @@ class UserProfileView(LoginRequiredMixin, View):
             'user_form': user_form,
             'password_form': password_form
         })
+        
+class UserResetPasswordView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = 'core.change_user'
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        
+        # Generate password reset token
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        
+        # Send password reset email using Django's built-in functionality
+        from django.contrib.auth.forms import PasswordResetForm
+        form = PasswordResetForm({'email': user.email})
+        if form.is_valid():
+            form.save(
+                request=request,
+                use_https=request.is_secure(),
+                subject_template_name='user/password_reset_subject.txt',
+                email_template_name='user/password_reset_email.html',
+            )
+            
+        messages.success(request, f"Password reset email sent to {user.email}")
+        return redirect('user_detail', pk=pk)

@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.models import Permission, Group
 from .models import User
 from django.utils.translation import gettext_lazy as _
@@ -89,3 +89,19 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         # You can add more custom validations here
         
         return password1
+    
+class CustomSetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password1'].label = _('Nueva contraseña')
+        self.fields['new_password2'].label = _('Confirmar nueva contraseña')
+        
+        # Traducir los mensajes de ayuda
+        self.fields['new_password1'].help_text = _(
+            '<ul>'
+            '<li>Su contraseña no puede ser similar a su información personal.</li>'
+            '<li>Su contraseña debe contener al menos 8 caracteres.</li>'
+            '<li>Su contraseña no puede ser una contraseña comúnmente utilizada.</li>'
+            '<li>Su contraseña no puede ser completamente numérica.</li>'
+            '</ul>'
+        )

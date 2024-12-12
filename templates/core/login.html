@@ -89,9 +89,6 @@
                 <input type="text" name="username" placeholder="Usuario" required>
                 <input type="password" name="password" placeholder="Contraseña" required>
                 <button type="submit">Enviar</button>
-                <div class="forgot-password">
-                    <a href="{% url 'password_reset' %}">Olvidé mi contraseña</a>
-                </div>
                 <input type="hidden" name="next" value="{{ next }}">
             </form>
         </div>

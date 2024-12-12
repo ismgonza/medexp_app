@@ -11,7 +11,7 @@ class InventoryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = 'inventory/inventoryitem_list.html'
     context_object_name = 'items'
     permission_required = 'inventory.view_inventoryitem'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = super().get_queryset()

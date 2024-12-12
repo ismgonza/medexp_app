@@ -21,7 +21,7 @@ class PatientListView(PermissionRequiredMixin, LoginRequiredMixin, FilterView):
     model = Patient
     template_name = 'patients/patient_list.html'
     filterset_class = PatientFilter
-    paginate_by = 10
+    paginate_by = 20
 
     def get_paginate_by(self, queryset):
         return self.request.GET.get('paginate_by', self.paginate_by)
